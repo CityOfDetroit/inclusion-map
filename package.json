@@ -19,5 +19,8 @@
   "homepage": "https://github.com/CityOfDetroit/inclusion-map#readme",
   "devDependencies": {
     "sass": "^1.22.12"
+  },
+  "dependencies": {
+    "yelp-fusion": "^3.0.0"
   }
 }
