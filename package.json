@@ -1,0 +1,23 @@
+{
+  "name": "inclusion-map",
+  "version": "1.0.0",
+  "description": "Free wifi areas within Detroit.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CityOfDetroit/inclusion-map.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CityOfDetroit/inclusion-map/issues"
+  },
+  "homepage": "https://github.com/CityOfDetroit/inclusion-map#readme",
+  "devDependencies": {
+    "sass": "^1.22.12"
+  }
+}
