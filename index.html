@@ -8,13 +8,42 @@
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
     <link rel="stylesheet" href="style.scss">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            overflow-x: hidden;
+            transition: 0.5s;
+        }
+    </style>
     <script src="node_modules/yelp-fusion/lib/index.js"></script>
 </head>
 <body>
-<div id="geocoder" class="geocoder"></div>
-<div id='map'></div>
+<div id="main">
+    <div type="text" class="geocoder"required  id="geocoder" placeholder="Address"></div>
+    <div class="card" id="card" style="width: 18rem;z-index: 100">
+        <div class="card-body">
+            <h5 class="card-title">Alert !!!</h5>
+            <p class="card-text" id="zipmessage"></p>
+            <a href="#" class="button openbtn" id="geojson"></a>
+        </div>
+    </div>
+    <div id='map'></div>
+</div>
+<!--<div class="MySidebar">-->
+
+<!--</div>-->
+<!--<div id="geocoder" class="geocoder"></div>-->
+<!--<div id='map'></div>-->
+<!--<div id="geojson"></div>-->
 <script type="text/javascript" src="index.js"></script>
 </body>
 </html>
