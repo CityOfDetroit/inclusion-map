@@ -8,75 +8,56 @@ var map = new mapboxgl.Map({
     center: [-83.060303, 42.348495]
 });
 //============================================================================
-var size = 100;
+// var size = 100;
 
-var pulsingDot = {
-    width: size,
-    height: size,
-    data: new Uint8Array(size * size * 4),
-
-    onAdd: function() {
-        var canvas = document.createElement('canvas');
-        canvas.width = this.width;
-        canvas.height = this.height;
-        this.context = canvas.getContext('2d');
-    },
-
-    render: function() {
-        var duration = 1000;
-        var t = (performance.now() % duration) / duration;
-
-        var radius = size / 2 * 0.3;
-        var outerRadius = size / 2 * 0.7 * t + radius;
-        var context = this.context;
-
-// draw outer circle
-        context.clearRect(0, 0, this.width, this.height);
-        context.beginPath();
-        context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
-        context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
-        context.fill();
-
-// draw inner circle
-        context.beginPath();
-        context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
-        context.fillStyle = 'rgba(255, 100, 100, 1)';
-        context.strokeStyle = 'white';
-        context.lineWidth = 2 + 4 * (1 - t);
-        context.fill();
-        context.stroke();
-
-// update this image's data with data from the canvas
-        this.data = context.getImageData(0, 0, this.width, this.height).data;
-
-// keep the map repainting
-        map.triggerRepaint();
-
-// return `true` to let the map know that the image was updated
-        return true;
-    }
-};
+// var pulsingDot = {
+//     width: size,
+//     height: size,
+//     data: new Uint8Array(size * size * 4),
+//
+//     onAdd: function() {
+//         var canvas = document.createElement('canvas');
+//         canvas.width = this.width;
+//         canvas.height = this.height;
+//         this.context = canvas.getContext('2d');
+//     },
+//
+//     render: function() {
+//         var duration = 1000;
+//         var t = (performance.now() % duration) / duration;
+//
+//         var radius = size / 2 * 0.3;
+//         var outerRadius = size / 2 * 0.7 * t + radius;
+//         var context = this.context;
+//
+// // draw outer circle
+//         context.clearRect(0, 0, this.width, this.height);
+//         context.beginPath();
+//         context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+//         context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+//         context.fill();
+//
+// // draw inner circle
+//         context.beginPath();
+//         context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+//         context.fillStyle = 'rgba(255, 100, 100, 1)';
+//         context.strokeStyle = 'white';
+//         context.lineWidth = 2 + 4 * (1 - t);
+//         context.fill();
+//         context.stroke();
+//
+// // update this image's data with data from the canvas
+//         this.data = context.getImageData(0, 0, this.width, this.height).data;
+//
+// // keep the map repainting
+//         map.triggerRepaint();
+//
+// // return `true` to let the map know that the image was updated
+//         return true;
+//     }
+// };
 //==========================================================
-map.on('load', function(){
-    map.addSource('point',{
-        "type": 'geojson',
-        "data": {
-            "type": "FeatureCollection",
-            "features": geoJSON
-        }
-    });
-    map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
 
-    map.addLayer({
-        "id": "points",
-        "type": "symbol",
-        "source": 'wifi-location',
-        "layout": {
-            "icon-image": "pulsing-dot"
-        }
-    });
-
-    })
 
 //================ geocoder for address search====================//
 let geocoder = new MapboxGeocoder({
@@ -100,16 +81,10 @@ let geocoder = new MapboxGeocoder({
     mapboxgl: mapboxgl
 });
 
-function updateMap(data){
-    console.log(data.length);
-    var geoJSON ={
-
-
-    }
-}
 document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
 //=================yelp for wifi search ============================//
+
 const url = 'https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/';
 fetch(url, {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -120,13 +95,13 @@ fetch(url, {
     .then(resp => resp.json())
     // Transform the data into json
     .then((data) => {
-
-        var geoJSON = {
+        console.log(data)
+        var geoJsonData = {
             type: "FeatureCollection",
             features: [],
         };
         for (let i = 0; i < data.length; i++) {
-            geoJSON.features.push({
+            geoJsonData.features.push({
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
@@ -137,15 +112,30 @@ fetch(url, {
                     "stationName": data[i].alias,
                     "isClosed": data[i].is_closed,
                     "station": data[i].stationName,
-                    "stAddress1": data[i].location.address1,
-                    "stAddress2": data[i].stAddress2,
+                    "Address1": data[i].location.address1,
                     "city": data[i].location.city,
                     "postalCode": data[i].location.zip_code,
                 }
             });
-        } // then data
+        }
+        map.on('load', function(){
+            map.addSource('Places',{
+                "type": 'geojson',
+                "data": geoJsonData
+            });
+
+            map.addLayer({
+                "id": "Places",
+                "type": "circle",
+                "source": 'Places',
+                "paint": {
+                    "circle-radius": 10,
+                    "circle-color": "#007cbf"
+                }
+            });
+
+        })// then data
 
         console.log(data[0].is_closed);
-
-         document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+         document.getElementById('geojson').innerHTML = JSON.stringify(geoJsonData, null, 2);
     })
