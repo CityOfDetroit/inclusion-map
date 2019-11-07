@@ -5,7 +5,7 @@
     <title>Inclusion Map</title>
 <!--    <author>Akhila Errabelly</author>-->
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
     <link rel="stylesheet" href="style.scss">
@@ -13,12 +13,13 @@
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
     <style>
-        body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:100%; }
-        .mapboxgl-popup {
-            max-width: 400px;
-            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+     
+        .place_address{
+         width: 100px;
         }
+        .mapboxgl-popup{
+            max-width: 540px;
+        } 
         .marker {
             color: red;
             display: block;
@@ -27,16 +28,7 @@
             cursor: pointer;
             padding: 0;
         }
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            overflow-x: hidden;
-            transition: 0.5s;
-        }
+     
     </style>
     <script src="node_modules/yelp-fusion/lib/index.js"></script>
 </head>
@@ -45,11 +37,6 @@
     <div type="text" class="geocoder"required  id="geocoder" placeholder="Address"></div>
     <div id='map'></div>
 </div>
-<!--<div class="MySidebar">-->
-<!--</div>-->
-<!--<div id="geocoder" class="geocoder"></div>-->
-<!--<div id='map'></div>-->
-<!--<div id="geojson"></div>-->
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
 <script type="text/javascript" src="index.js"></script>
 

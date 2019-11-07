@@ -1,4 +1,3 @@
-// import {yelp} from './components/yelp.js';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2l0eW9mZGV0cm9pdCIsImEiOiJjajd3MGlodXIwZ3piMnhudmlzazVnNm44In0.BL29_7QRvcnOrVuXX_hD9A';
 var map = new mapboxgl.Map({
@@ -29,7 +28,7 @@ let geocoder = new MapboxGeocoder({
     mapboxgl: mapboxgl
 });
 document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
-
+//================ geocoder for address search ends====================//
 const geoJson = {
     type: "FeatureCollection",
     features: [],
@@ -52,7 +51,7 @@ map.on('load', function(){
         type: "FeatureCollection",
         features: [],
     }
-    const url = 'https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/ ';
+    const url = 'https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/42.3314,-83.0458 ';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
@@ -66,8 +65,30 @@ map.on('load', function(){
             const geoJson = getGeoJson;
 
             for (let i = 0; i < data.length; i++) {
-                var popup = new mapboxgl.Popup({ offset: 25 })
-                    .setText(data[i].name);
+                var popup = new mapboxgl.Popup()
+                    .setHTML(
+                        '<div class="card mb-3">' +
+                        '  <div class="row no-gutters">' +
+                        '    <div class="col-md-4">' +
+                        '<img class="card-img" src="' + data[i].image_url + '"/>' +
+                        '    </div>' +
+                        '    <div class="col-md-8">' +
+                        '      <div class="card-body">' +
+                        '        <h6 class="card-title">'+data[i].name+'</h6>' +
+                        '<p class="place_address">'
+                        +'<a href="">'
+                        +data[i].location.address1 +','+ data[i].location.city+','
+                        + data[i].location.state+',' + data[i].location.zip_code +
+                        '</a>'+
+                        '</p>' +
+                        '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
+                        '      </div>' +
+                        '    </div>' +
+                        '  </div>' +
+                        '</div>'
+                    );
+                console.log(data[i].rating);
+                    // .setText(data[i].name);
 // create DOM element for the marker
                 var el = document.createElement('div');
                 el.id = 'marker';
@@ -76,6 +97,7 @@ map.on('load', function(){
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                     .setPopup(popup)
                     .addTo(map);
+
                 getGeoJson.features.push({
                     "type": "Feature",
                     "geometry": {
@@ -86,6 +108,7 @@ map.on('load', function(){
                         "id": data[i].id,
                         "stationName": data[i].alias,
                         "isClosed": data[i].is_closed,
+                        "imageUrl" : data[i].image_url,
                         "Address1": data[i].location.address1,
                         "city": data[i].location.city,
                         "postalCode": data[i].location.zip_code,
@@ -97,12 +120,8 @@ map.on('load', function(){
                 });
                 console.log(data[i]);
             }
-
         })
 })// then data
 
-//================ geocoder for address search ends====================//
-//=================yelp for wifi search ============================//
-// Create a popup, but don't add it to the map yet.
 
-// create the popup
+//=================yelp for wifi search ============================//

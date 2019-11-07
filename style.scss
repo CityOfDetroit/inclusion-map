@@ -5,5 +5,87 @@ body {
  top:0;
  bottom:0;
  width:100%;
+ .mapboxgl-popup{
+  max-width: 422px;
+ }
+ .card-img{
+   height: 100%;
  }
  }
+
+ }
+ .fa {
+   display: inline-block;
+   font: normal normal normal 14px/1 FontAwesome;
+   font-size: inherit;
+   text-rendering: auto;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+ }
+ .fa-star:before {
+   content: "\f005";
+ }
+ .fa-star-o:before {
+   content: "\f006";
+ }
+ .fa-star-half-o:before{
+ content: "\f089";
+ }
+ .container {
+   background: #F8F8F8;
+   width: 93px;
+   padding: 15px;
+   margin: 32px auto;
+ }
+ .star {
+   @extend .fa;
+   @extend .fa-star-o;
+ }
+ .rating[data-rating="1"] {
+   .star:first-child {
+     @extend .fa-star;
+   }
+ }
+ .rating[data-rating="2"] {
+   .star{
+     &:nth-child(1),
+     &:nth-child(2) {
+       @extend .fa-star;
+     }
+   }
+ }
+ .rating[data-rating="3"] {
+   .star{
+     &:nth-child(1),
+     &:nth-child(2),
+     &:nth-child(3) {
+       @extend .fa-star;
+     }
+   }
+ }
+ .rating[data-rating="4"] {
+   .star {
+     @extend .fa-star;
+     &:last-child {
+       @extend .fa-star-o;
+     }
+   }
+}
+   .rating[data-rating="4.5"] {
+      .star {
+             @extend .fa-star;
+      &:nth-child(4){
+       @extend .fa-star;
+      @extend .fa-star-half-o;
+      }
+        &:last-child {
+          @extend .fa-star-o;
+        }
+      }
+    }
+ .rating[data-rating="5"] {
+   .star {
+     @extend .fa-star;
+   }
+   }
+  
