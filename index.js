@@ -6,6 +6,9 @@ var map = new mapboxgl.Map({
     zoom: 10.7,
     center: [-83.060303, 42.348495]
 });
+ 
+// Add zoom and rotation controls to the map.
+map.addControl(new mapboxgl.NavigationControl());
 //================ geocoder for address search====================//
 let geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
@@ -87,7 +90,7 @@ map.on('load', function(){
                         '  </div>' +
                         '</div>'
                     );
-                console.log(data[i].rating);
+                //console.log(data[i].rating);
                     // .setText(data[i].name);
 // create DOM element for the marker
                 var el = document.createElement('div');
@@ -119,9 +122,9 @@ map.on('load', function(){
                     }
                 });
                 console.log(data[i]);
+                // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
             }
         })
 })// then data
 
 
-//=================yelp for wifi search ============================//
