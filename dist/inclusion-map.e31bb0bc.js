@@ -126,7 +126,8 @@ var map = new mapboxgl.Map({
   // stylesheet location
   zoom: 11.7,
   center: [-83.060303, 42.348495]
-}); //================ geocoder for address search====================//
+});
+var baseUrl = "https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/"; //================ geocoder for address search====================//
 
 var geocoder = new MapboxGeocoder({
   accessToken: mapboxgl.accessToken,
@@ -174,7 +175,72 @@ map.on('load', function () {
     }
   });
   getUserLocation();
+  getGeocoderResults();
 }); // then data
+
+function getGeocoderResults() {
+  geocoder.on('result', function (ev) {
+    map.setZoom(15);
+    map.getSource('places').setData(ev.result.geometry);
+    console.log('ev', ev);
+    built_address = ev.result.place_name;
+    console.log("coordinates ", ev.result.geometry.coordinates[0]); // Api for data 
+
+    var url = baseUrl + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
+    var getGeoJson = {
+      type: "FeatureCollection",
+      features: []
+    };
+    fetch(url, {
+      method: 'GET',
+      // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors',
+      // no-cors, *cors, same-origin
+      cache: 'no-cache',
+      // *default, no-cache, reload, force-cache, only-if-cached
+      redirect: 'follow' // manual, *follow, error
+
+    }).then(function (resp) {
+      return resp.json();
+    }) // Transform the data into json
+    .then(function (data) {
+      console.log(data);
+      var geoJson = getGeoJson;
+
+      for (var i = 0; i < data.length; i++) {
+        var popup = new mapboxgl.Popup().setHTML('<div class="card mb-3">' + '  <div class="row no-gutters">' + '    <div class="col-md-4">' + '<img class="card-img" src="' + data[i].image_url + '"/>' + '    </div>' + '    <div class="col-md-8">' + '      <div class="card-body">' + '        <h6 class="card-title">' + data[i].name + '</h6>' + '<p class="place_address">' + '<a href="">' + data[i].location.address1 + ',' + data[i].location.city + ',' + data[i].location.state + ',' + data[i].location.zip_code + '</a>' + '</p>' + '<div class="rating" data-rating="' + data[i].rating + '"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>' + '      </div>' + '    </div>' + '  </div>' + '</div>'); //console.log(data[i].rating);
+        // .setText(data[i].name);
+        // create DOM element for the marker
+
+        var el = document.createElement('div');
+        el.id = 'marker'; // create the marker
+
+        var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
+        getGeoJson.features.push({
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+          },
+          "properties": {
+            "id": data[i].id,
+            "stationName": data[i].alias,
+            "isClosed": data[i].is_closed,
+            "imageUrl": data[i].image_url,
+            "Address1": data[i].location.address1,
+            "city": data[i].location.city,
+            "postalCode": data[i].location.zip_code
+          },
+          "layout": {
+            "icon-image": "{icon}-15",
+            "icon-allow-overlap": true
+          }
+        });
+        console.log(data[i]); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+      }
+    });
+  });
+}
 
 function getUserLocation() {
   // request to allow user position 
@@ -191,70 +257,10 @@ function getUserLocation() {
       map.getSource('places').setData({
         type: "Point",
         coordinates: [user_coordinates.lng, user_coordinates.lat]
-      }); // geocoder.query(user_coordinates.lat, user_coordinates.lng)
+      });
+      getGeocoderResults(); // geocoder.query(user_coordinates.lat, user_coordinates.lng)
       // Listen for the `result` event from the MapboxGeocoder that is triggered when a user
       // makes a selection and add a symbol that matches the result.
-
-      geocoder.on('result', function (ev) {
-        map.getSource('places').setData(ev.result.geometry);
-        console.log('ev', ev);
-        built_address = ev.result.place_name;
-        console.log("coordinates ", ev.result.geometry.coordinates[0]);
-        var url = 'https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/' + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
-        var getGeoJson = {
-          type: "FeatureCollection",
-          features: [] // const url = 'https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/ ';
-
-        };
-        fetch(url, {
-          method: 'GET',
-          // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors',
-          // no-cors, *cors, same-origin
-          cache: 'no-cache',
-          // *default, no-cache, reload, force-cache, only-if-cached
-          redirect: 'follow' // manual, *follow, error
-
-        }).then(function (resp) {
-          return resp.json();
-        }) // Transform the data into json
-        .then(function (data) {
-          console.log(data);
-          var geoJson = getGeoJson;
-
-          for (var i = 0; i < data.length; i++) {
-            var popup = new mapboxgl.Popup().setHTML('<div class="card mb-3">' + '  <div class="row no-gutters">' + '    <div class="col-md-4">' + '<img class="card-img" src="' + data[i].image_url + '"/>' + '    </div>' + '    <div class="col-md-8">' + '      <div class="card-body">' + '        <h6 class="card-title">' + data[i].name + '</h6>' + '<p class="place_address">' + '<a href="">' + data[i].location.address1 + ',' + data[i].location.city + ',' + data[i].location.state + ',' + data[i].location.zip_code + '</a>' + '</p>' + '<div class="rating" data-rating="' + data[i].rating + '"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>' + '      </div>' + '    </div>' + '  </div>' + '</div>'); //console.log(data[i].rating);
-            // .setText(data[i].name);
-            // create DOM element for the marker
-
-            var el = document.createElement('div');
-            el.id = 'marker'; // create the marker
-
-            var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
-            getGeoJson.features.push({
-              "type": "Feature",
-              "geometry": {
-                "type": "Point",
-                "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-              },
-              "properties": {
-                "id": data[i].id,
-                "stationName": data[i].alias,
-                "isClosed": data[i].is_closed,
-                "imageUrl": data[i].image_url,
-                "Address1": data[i].location.address1,
-                "city": data[i].location.city,
-                "postalCode": data[i].location.zip_code
-              },
-              "layout": {
-                "icon-image": "{icon}-15",
-                "icon-allow-overlap": true
-              }
-            });
-            console.log(data[i]); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
-          }
-        });
-      });
     };
 
     navigator.geolocation.getCurrentPosition(showPosition);
@@ -294,7 +300,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37251" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37819" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
