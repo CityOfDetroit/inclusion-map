@@ -18,7 +18,7 @@ let geocoder = new MapboxGeocoder({
         },
     // further limit results to the geographic bounds representing the region of
     // Detroit Michigan
-     bbox: [-83.3437, 42.2102, -82.8754, 42.5197],
+     //bbox: [-83.3437, 42.2102, -82.8754, 42.5197],
     // apply a client side filter to further limit results to those strictly within
     // the detroit michigan region
     filter: function(item) {
@@ -35,14 +35,19 @@ let geocoder = new MapboxGeocoder({
    
 });
 // Add zoom and rotation controls to the map.
-map.addControl(geocoder);
+map.addControl(geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl
+    }));
+map.addControl(new mapboxgl.NavigationControl());
+
 // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
 const geoJson = {
     type: "FeatureCollection",
     features: [],
 };
-
+//data to onLoad
 map.on('load', function(){
     map.addSource('places',{
         "type": 'geojson',
@@ -57,14 +62,62 @@ map.on('load', function(){
             "circle-color": "#007cbf"
         }
     });
+//     const url =  baseUrl + '42.3314,-83.0458';
+//     fetch(url, {
+//         method: 'GET', // *GET, POST, PUT, DELETE, etc.
+//         mode: 'cors', // no-cors, *cors, same-origin
+//         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+//         redirect: 'follow', // manual, *follow, error
+//     }) .then(resp => resp.json())
+//     // Transform the data into json
+//     .then((data) => {
+//         console.log(data)
+//         for (let i = 0; i < data.length; i++) {
+//             var popup = new mapboxgl.Popup()
+//                 .setHTML(
+//                     '<div class="card mb-3">' +
+//                     '  <div class="row no-gutters">' +
+//                     '    <div class="col-md-4">' +
+//                     '<img class="card-img" src="' + data[i].image_url + '"/>' +
+//                     '    </div>' +
+//                     '    <div class="col-md-8">' +
+//                     '      <div class="card-body">' +
+//                     '        <h6 class="card-title">'+data[i].name+'</h6>' +
+//                     '<p class="place_address">'
+//                     +'<a href="">'
+//                     +data[i].location.address1 +','+ data[i].location.city+','
+//                     + data[i].location.state+',' + data[i].location.zip_code +
+//                     '</a>'+
+//                     '</p>' +
+//                     '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
+//                     '      </div>' +
+//                     '    </div>' +
+//                     '  </div>' +
+//                     '</div>'
+//                 );
+//             //console.log(data[i].rating);
+//                 // .setText(data[i].name);
+// // create DOM element for the marker
+//             var el = document.createElement('div');
+//             el.id = 'marker';
+// // create the marker
+//             var marker = new mapboxgl.Marker()
+//                 .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+//                 .setPopup(popup)
+//                 .addTo(map);
+//     };
+// });
      getUserLocation()
      getGeocoderResults()
     
 })// then data
-
+let getGeoJson ={
+    type: "FeatureCollection",
+    features: [],
+}
 function getGeocoderResults(){
     geocoder.on('result', function(ev) {
-        map.setZoom(15);
+        map.setZoom(14);
         map.getSource('places').setData(ev.result.geometry);
        
         console.log('ev',ev)
@@ -72,10 +125,6 @@ function getGeocoderResults(){
         console.log("coordinates ", ev.result.geometry.coordinates[0])
         // Api for data 
         const url =  baseUrl+ [ev.result.geometry.coordinates[1],ev.result.geometry.coordinates[0]];
-        let getGeoJson ={
-            type: "FeatureCollection",
-            features: [],
-        }
         fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, *cors, same-origin
@@ -89,38 +138,7 @@ function getGeocoderResults(){
                 const geoJson = getGeoJson;
     
                 for (let i = 0; i < data.length; i++) {
-                    var popup = new mapboxgl.Popup()
-                        .setHTML(
-                            '<div class="card mb-3">' +
-                            '  <div class="row no-gutters">' +
-                            '    <div class="col-md-4">' +
-                            '<img class="card-img" src="' + data[i].image_url + '"/>' +
-                            '    </div>' +
-                            '    <div class="col-md-8">' +
-                            '      <div class="card-body">' +
-                            '        <h6 class="card-title">'+data[i].name+'</h6>' +
-                            '<p class="place_address">'
-                            +'<a href="">'
-                            +data[i].location.address1 +','+ data[i].location.city+','
-                            + data[i].location.state+',' + data[i].location.zip_code +
-                            '</a>'+
-                            '</p>' +
-                            '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
-                            '      </div>' +
-                            '    </div>' +
-                            '  </div>' +
-                            '</div>'
-                        );
-                    //console.log(data[i].rating);
-                        // .setText(data[i].name);
-    // create DOM element for the marker
-                    var el = document.createElement('div');
-                    el.id = 'marker';
-    // create the marker
-                    var marker = new mapboxgl.Marker()
-                        .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                        .setPopup(popup)
-                        .addTo(map);
+                    
     
                     getGeoJson.features.push({
                         "type": "Feature",
@@ -144,6 +162,37 @@ function getGeocoderResults(){
                     });
                     console.log(data[i]);
                     // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+                    var popup = new mapboxgl.Popup()
+                        .setHTML(
+                            '<div class="card mb-3">' +
+                            '  <div class="row no-gutters">' +
+                            '    <div class="col-md-4">' +
+                            '<img class="card-img" src="' + data[i].image_url + '"/>' +
+                            '    </div>' +
+                            '    <div class="col-md-8">' +
+                            '      <div class="card-body">' +
+                            '        <h6 class="card-title">'+data[i].name+'</h6>' +
+                            '<p class="place_address">'
+                            +'<a href="">'
+                            +data[i].location.address1 +','+ data[i].location.city+','
+                            + data[i].location.state+',' + data[i].location.zip_code +
+                            '</a>'+
+                            '</p>' +
+                            '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
+                            '      </div>' +
+                            '    </div>' +
+                            '  </div>' +
+                            '</div>'
+                        );
+                    
+    // create DOM element for the marker
+                    var el = document.createElement('div');
+                    el.id = 'marker';
+    // create the marker
+                    var marker = new mapboxgl.Marker()
+                        .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+                        .setPopup(popup)
+                        .addTo(map);
                 }
             })
 
