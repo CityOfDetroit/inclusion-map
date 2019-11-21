@@ -63,7 +63,7 @@ map.on('load', function(){
         }
 
     });
-
+    spinner.removeAttribute('hidden');
     const url =  baseUrl + '42.3314,-83.0458';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -73,6 +73,7 @@ map.on('load', function(){
     }) .then(resp => resp.json())
     // Transform the data into json
     .then((data) => {
+        spinner.setAttribute("hidden", "");
         console.log(data)
         for (let i = 0; i < data.length; i++) {
             var popup = new mapboxgl.Popup()
@@ -113,6 +114,23 @@ map.on('load', function(){
      getGeocoderResults()
     
 })// then data
+map.on('click', (e) => {
+    var coords = `lat: ${e.lngLat.lat} <br> lng: ${e.lngLat.lng}`;
+
+    // create the popup
+    var popup = new mapboxgl.Popup().setText(coords);
+
+    // create DOM element for the marker
+    var el = document.createElement('div');
+    el.id = 'marker';
+
+    // create the marker
+    new mapboxgl.Marker(el)
+        .setLngLat(e.lngLat)
+        .setPopup(popup)
+        .addTo(map);
+});
+
 let getGeoJson ={
     type: "FeatureCollection",
     features: [],
@@ -120,15 +138,27 @@ let getGeoJson ={
 const checkStatus = response =>{
     if(response.ok){
         return response;
+        console.log("response"+response)
     } else{
         const error = new Error(response.statusText);
         error.response = response;
         throw error;
+        console.log("error"+error)
     }
 }
+const spinner = document.getElementById("spinner");
+
+function showSpinner() {
+    spinner.className = "show";
+    setTimeout(() => {
+        spinner.className = spinner.className.replace("show", "");
+    }, 5000);
+}
+
 function getGeocoderResults(){
 
     geocoder.on('result', function(ev) {
+        spinner.removeAttribute('hidden');
         map.setZoom(13);
         map.getSource('places').setData(ev.result.geometry);
        
@@ -147,6 +177,7 @@ function getGeocoderResults(){
             .then(resp => resp.json())
             // Transform the data into json
             .then((data) => {
+                spinner.setAttribute("hidden", "");
                 console.log(data)
                 const geoJson = getGeoJson;
                 for (let i = 0; i < data.length; i++) {
@@ -171,15 +202,6 @@ function getGeocoderResults(){
                         }
                     });
                     console.log(data[i]);
-                    // create DOM element for the marker
-                    var el = document.createElement('div');
-                    el.id = 'marker';
-// create the marker
-                    var marker = new mapboxgl.Marker()
-                        .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                        .setPopup(popup)
-                        .addTo(map);
-                    // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
                     var popup = new mapboxgl.Popup()
                         .setHTML(
                             '<div class="card mb-3">' +
@@ -202,7 +224,15 @@ function getGeocoderResults(){
                             '  </div>' +
                             '</div>'
                         );
-
+                    // create DOM element for the marker
+                    var el = document.createElement('div');
+                    el.id = 'marker';
+// create the marker
+                    var marker = new mapboxgl.Marker()
+                        .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+                        .setPopup(popup)
+                        .addTo(map);
+                    // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
                 }
             })
 
