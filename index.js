@@ -79,25 +79,6 @@ map.on('load', function(){
         for (let i = 0; i < data.length; i++) {
             var popup = new mapboxgl.Popup()
                 .setHTML(
-                    '<div class="card mb-3">' +
-                    '  <div class="row no-gutters">' +
-                    '    <div class="col-md-4">' +
-                    '<img class="card-img" src="' + data[i].image_url + '"/>' +
-                    '    </div>' +
-                    '    <div class="col-md-8">' +
-                    '      <div class="card-body">' +
-                    '        <h6 class="card-title">'+data[i].name+'</h6>' +
-                    '<p class="place_address">'
-                    +'<a href="">'
-                    +data[i].location.address1 +','+ data[i].location.city+','
-                    + data[i].location.state+',' + data[i].location.zip_code +
-                    '</a>'+
-                    '</p>' +
-                    '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
-                    '      </div>' +
-                    '    </div>' +
-                    '  </div>' +
-                    '</div>'
                 );
             //console.log(data[i].rating);
                 // .setText(data[i].name);
@@ -119,8 +100,6 @@ map.on('click', (e) => {
     spinner.removeAttribute('hidden');
     var coords = `lat: ${e.lngLat.lat} <br> lng: ${e.lngLat.lng}`;
 
-    // create the popup
-    var popup = new mapboxgl.Popup().setText(coords);
     //base url
     const url =  baseUrl+ [e.lngLat.lat,e.lngLat.lng];
     //fetch to get api from html
@@ -148,7 +127,6 @@ map.on('click', (e) => {
                         "stationName": data[i].alias,
                         "isClosed": data[i].is_closed,
                         "imageUrl" : data[i].image_url,
-                        "Address1": data[i].location.address1,
                         "city": data[i].location.city,
                         "postalCode": data[i].location.zip_code,
                     },
@@ -158,35 +136,13 @@ map.on('click', (e) => {
                     }
                 });
                 console.log(data[i]);
-                var popup = new mapboxgl.Popup()
-                    .setHTML(
-                        '<div class="card mb-3">' +
-                        '  <div class="row no-gutters">' +
-                        '    <div class="col-md-4">' +
-                        '<img class="card-img" src="' + data[i].image_url + '"/>' +
-                        '    </div>' +
-                        '    <div class="col-md-8">' +
-                        '      <div class="card-body">' +
-                        '        <h6 class="card-title">'+data[i].name+'</h6>' +
-                        '<p class="place_address">'
-                        +'<a href="">'
-                        +data[i].location.address1 +','+ data[i].location.city+','
-                        + data[i].location.state+',' + data[i].location.zip_code +
-                        '</a>'+
-                        '</p>' +
-                        '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
-                        '      </div>' +
-                        '    </div>' +
-                        '  </div>' +
-                        '</div>'
-                    );
+
                 // create DOM element for the marker
                 var el = document.createElement('div');
                 el.id = 'marker';
 // create the marker
                 var marker = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                    .setPopup(popup)
                     .addTo(map);
                 // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
             }
@@ -198,7 +154,7 @@ map.on('click', (e) => {
     // create the marker
     new mapboxgl.Marker(el)
         .setLngLat(e.lngLat)
-        .setPopup(popup)
+
         .addTo(map);
 });
 
@@ -273,35 +229,12 @@ function getGeocoderResults(){
                         }
                     });
                     console.log(data[i]);
-                    var popup = new mapboxgl.Popup()
-                        .setHTML(
-                            '<div class="card mb-3">' +
-                            '  <div class="row no-gutters">' +
-                            '    <div class="col-md-4">' +
-                            '<img class="card-img" src="' + data[i].image_url + '"/>' +
-                            '    </div>' +
-                            '    <div class="col-md-8">' +
-                            '      <div class="card-body">' +
-                            '        <h6 class="card-title">'+data[i].name+'</h6>' +
-                            '<p class="place_address">'
-                            +'<a href="">'
-                            +data[i].location.address1 +','+ data[i].location.city+','
-                            + data[i].location.state+',' + data[i].location.zip_code +
-                            '</a>'+
-                            '</p>' +
-                            '<div class="rating" data-rating="'+ data[i].rating+'"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>'+
-                            '      </div>' +
-                            '    </div>' +
-                            '  </div>' +
-                            '</div>'
-                        );
                     // create DOM element for the marker
                     var el = document.createElement('div');
                     el.id = 'marker';
 // create the marker
                     var marker = new mapboxgl.Marker()
                         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                        .setPopup(popup)
                         .addTo(map);
                     // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
                 }
