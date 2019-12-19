@@ -1,0 +1,47 @@
+@charset "UTF-8";
+body {
+  margin: 0;
+  padding: 0;
+}
+body #map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+body #map .mapboxgl-popup {
+  max-width: 422px;
+}
+body #map .card-img {
+  height: 100%;
+}
+
+.fa, .star {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-star:before, .rating[data-rating="5"] .star:before, .rating[data-rating="4.5"] .star:nth-child(4):before, .rating[data-rating="4.5"] .star:before, .rating[data-rating="4"] .star:before, .rating[data-rating="3"] .star:nth-child(1):before, .rating[data-rating="3"] .star:nth-child(2):before, .rating[data-rating="3"] .star:nth-child(3):before, .rating[data-rating="2"] .star:nth-child(1):before, .rating[data-rating="2"] .star:nth-child(2):before, .rating[data-rating="1"] .star:first-child:before {
+  content: "";
+}
+
+.fa-star-o:before, .rating[data-rating="4.5"] .star:last-child:before, .rating[data-rating="4"] .star:last-child:before, .star:before {
+  content: "";
+}
+
+.fa-star-half-o:before, .rating[data-rating="4.5"] .star:nth-child(4):before {
+  content: "";
+}
+
+.container {
+  background: #F8F8F8;
+  width: 93px;
+  padding: 15px;
+  margin: 32px auto;
+}
+
+/*# sourceMappingURL=/style.97fcb138.css.map */
