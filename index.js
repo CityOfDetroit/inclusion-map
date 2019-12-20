@@ -9,7 +9,7 @@ var map = new mapboxgl.Map({
 
 let baseUrl = "https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/";
 //================ geocoder for address search====================//
-let geocoder = new MapboxGeocoder({
+const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     // limit results to North America
     countries: 'us',
@@ -83,7 +83,6 @@ map.on('load', function () {
                 // create the marker
                 var marker = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                    .setPopup(popup)
                     .addTo(map);
             };
         });
@@ -93,12 +92,14 @@ map.on('load', function () {
 })// then data
 var theMarker = {};
 map.on('click', (e) => {
-  
+    console.log("e" + e)
   // Add spinner function
     spinner.removeAttribute('hidden');
-    var coords = `lat: ${e.lngLat.lat} <br> lng: ${e.lngLat.lng}`;
+    map.flyTo({ center: e.features[0].geometry.coordinates });
     //base url
     const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
+   
+    // map.flyTo({ center: e.features[0].geometry.coordinates });
     //fetch to get api from html
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -183,7 +184,7 @@ function showSpinner() {
 function getGeocoderResults() {
     geocoder.on('result', function (ev) {
         spinner.removeAttribute('hidden');
-        map.setZoom(13);
+       
         map.getSource('places').setData(ev.result.geometry);
         built_address = ev.result.place_name
         console.log("coordinates ", ev.result.geometry.coordinates[0])

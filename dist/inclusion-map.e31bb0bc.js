@@ -202,7 +202,7 @@ map.on('load', function () {
       var el = document.createElement('div');
       el.id = 'marker'; // create the marker
 
-      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
+      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map);
     }
 
     ;
@@ -212,11 +212,15 @@ map.on('load', function () {
 
 var theMarker = {};
 map.on('click', function (e) {
-  // Add spinner function
-  spinner.removeAttribute('hidden');
-  var coords = "lat: ".concat(e.lngLat.lat, " <br> lng: ").concat(e.lngLat.lng); //base url
+  console.log("e" + e); // Add spinner function
 
-  var url = baseUrl + [e.lngLat.lat, e.lngLat.lng]; //fetch to get api from html
+  spinner.removeAttribute('hidden');
+  map.flyTo({
+    center: e.features[0].geometry.coordinates
+  }); //base url
+
+  var url = baseUrl + [e.lngLat.lat, e.lngLat.lng]; // map.flyTo({ center: e.features[0].geometry.coordinates });
+  //fetch to get api from html
 
   fetch(url, {
     method: 'GET',
@@ -300,7 +304,6 @@ function showSpinner() {
 function getGeocoderResults() {
   geocoder.on('result', function (ev) {
     spinner.removeAttribute('hidden');
-    map.setZoom(13);
     map.getSource('places').setData(ev.result.geometry);
     built_address = ev.result.place_name;
     console.log("coordinates ", ev.result.geometry.coordinates[0]); // Api for data
