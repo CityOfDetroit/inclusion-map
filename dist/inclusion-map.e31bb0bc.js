@@ -153,10 +153,7 @@ var geocoder = new MapboxGeocoder({
   mapboxgl: mapboxgl
 }); // Add zoom and rotation controls to the map.
 
-map.addControl(geocoder = new MapboxGeocoder({
-  accessToken: mapboxgl.accessToken,
-  mapboxgl: mapboxgl
-}));
+map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl()); // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
 
@@ -177,8 +174,7 @@ map.on('load', function () {
     "paint": {
       "circle-radius": 10,
       "circle-color": "#007cbf"
-    },
-    'filter': ['in', 'FIPS', '']
+    }
   });
   spinner.removeAttribute('hidden');
   var url = baseUrl + '42.3314,-83.0458';
@@ -268,13 +264,7 @@ map.on('click', function (e) {
   }); // create DOM element for the marker
 
   var el = document.createElement('div');
-  el.id = 'theMarker';
-
-  if (theMarker.length > 1) {
-    map.removeLayer(theMarker);
-  }
-
-  ; //Add a marker to show where you clicked.
+  el.id = 'Marker'; //Add a marker to show where you clicked.
   // create the marker
 
   var marker = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
