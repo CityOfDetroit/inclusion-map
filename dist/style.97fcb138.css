@@ -3,17 +3,11 @@ body {
   margin: 0;
   padding: 0;
 }
-body #map {
+body #main #map {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
-}
-body #map .mapboxgl-popup {
-  max-width: 422px;
-}
-body #map .card-img {
-  height: 100%;
 }
 
 .fa, .star {

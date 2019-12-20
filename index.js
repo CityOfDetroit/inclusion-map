@@ -6,7 +6,7 @@ var map = new mapboxgl.Map({
     zoom: 11.7,
     center: [-83.060303, 42.348495]
 });
- 
+
 let baseUrl = "https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/";
 //================ geocoder for address search====================//
 let geocoder = new MapboxGeocoder({
@@ -15,30 +15,28 @@ let geocoder = new MapboxGeocoder({
     countries: 'us',
     marker: {
         color: 'orange'
-        },
+    },
     // further limit results to the geographic bounds representing the region of
     // Detroit Michigan
-     bbox: [-83.3437, 42.2102, -82.8754, 42.5197],
+    bbox: [-83.3437, 42.2102, -82.8754, 42.5197],
     // apply a client side filter to further limit results to those strictly within
     // the detroit michigan region
-    filter: function(item) {
+    filter: function (item) {
         // returns true if item contains the detroit michigan region
         return item.context.map(function (i) {
             // this code attempts to find the `region` named `Detroit Michigan`
             return (i.id.split('.').shift() === 'region' && i.text === 'Michigan');
-        }).reduce(function(acc, cur) {
+        }).reduce(function (acc, cur) {
             return acc || cur;
         });
     },
-  
     mapboxgl: mapboxgl,
-   
 });
 // Add zoom and rotation controls to the map.
 map.addControl(geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     mapboxgl: mapboxgl
-    }));
+}));
 map.addControl(new mapboxgl.NavigationControl());
 
 // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
@@ -48,8 +46,8 @@ const geoJson = {
     features: [],
 };
 //data to onLoad
-map.on('load', function(){
-    map.addSource('places',{
+map.on('load', function () {
+    map.addSource('places', {
         "type": 'geojson',
         "data": geoJson
     });
@@ -60,48 +58,50 @@ map.on('load', function(){
         "paint": {
             "circle-radius": 10,
             "circle-color": "#007cbf"
-        }
-
+        },
+        'filter': ['in', 'FIPS', '']
     });
-
-    spinner.removeAttribute('hidden');
-    const url =  baseUrl + '42.3314,-83.0458';
+   
+ spinner.removeAttribute('hidden');
+    const url = baseUrl + '42.3314,-83.0458';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         redirect: 'follow', // manual, *follow, error
-    }) .then(resp => resp.json())
-    // Transform the data into json
-    .then((data) => {
-        spinner.setAttribute("hidden", "");
-        console.log(data)
-        for (let i = 0; i < data.length; i++) {
-            var popup = new mapboxgl.Popup()
-                .setHTML(
-                );
-            //console.log(data[i].rating);
+    }).then(resp => resp.json())
+        // Transform the data into json
+        .then((data) => {
+             spinner.setAttribute("hidden", "");
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                var popup = new mapboxgl.Popup()
+                    .setHTML(
+                    );
+                //console.log(data[i].rating);
                 // .setText(data[i].name);
-// create DOM element for the marker
-            var el = document.createElement('div');
-            el.id = 'marker';
-// create the marker
-            var marker = new mapboxgl.Marker()
-                .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                .setPopup(popup)
-                .addTo(map);
-    };
-});
+                // create DOM element for the marker
+                var el = document.createElement('div');
+                el.id = 'marker';
+                // create the marker
+                var marker = new mapboxgl.Marker()
+                    .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+                    .setPopup(popup)
+                    .addTo(map);
+            };
+        });
 
-     getGeocoderResults()
-    
+    getGeocoderResults()
+
 })// then data
+var theMarker = {};
 map.on('click', (e) => {
+  
+  // Add spinner function
     spinner.removeAttribute('hidden');
     var coords = `lat: ${e.lngLat.lat} <br> lng: ${e.lngLat.lng}`;
-
     //base url
-    const url =  baseUrl+ [e.lngLat.lat,e.lngLat.lng];
+    const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
     //fetch to get api from html
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -126,7 +126,7 @@ map.on('click', (e) => {
                         "id": data[i].id,
                         "stationName": data[i].alias,
                         "isClosed": data[i].is_closed,
-                        "imageUrl" : data[i].image_url,
+                        "imageUrl": data[i].image_url,
                         "city": data[i].location.city,
                         "postalCode": data[i].location.zip_code,
                     },
@@ -137,10 +137,9 @@ map.on('click', (e) => {
                 });
                 console.log(data[i]);
 
-                // create DOM element for the marker
                 var el = document.createElement('div');
                 el.id = 'marker';
-// create the marker
+                // create the marker
                 var marker = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                     .addTo(map);
@@ -149,31 +148,38 @@ map.on('click', (e) => {
         })
     // create DOM element for the marker
     var el = document.createElement('div');
-    el.id = 'marker';
+    el.id = 'theMarker';
+   
+    if (theMarker.length > 1) {
+        map.removeLayer(theMarker);
+  };
+
+//Add a marker to show where you clicked.
 
     // create the marker
-    new mapboxgl.Marker(el)
+    var marker = new mapboxgl.Marker(el)
         .setLngLat(e.lngLat)
-
         .addTo(map);
+        console.log("marker"+marker.length);
 });
 
-let getGeoJson ={
+let getGeoJson = {
     type: "FeatureCollection",
     features: [],
 }
-const checkStatus = response =>{
-    if(response.ok){
+const checkStatus = response => {
+    if (response.ok) {
         return response;
-        console.log("response"+response)
-    } else{
+        console.log("response" + response)
+    } else {
         const error = new Error(response.statusText);
         error.response = response;
         throw error;
-        console.log("error"+error)
+        console.log("error" + error)
     }
 }
 const spinner = document.getElementById("spinner");
+let setdefault = true;
 
 function showSpinner() {
     spinner.className = "show";
@@ -181,19 +187,15 @@ function showSpinner() {
         spinner.className = spinner.className.replace("show", "");
     }, 5000);
 }
-
-function getGeocoderResults(){
-
-    geocoder.on('result', function(ev) {
+function getGeocoderResults() {
+    geocoder.on('result', function (ev) {
         spinner.removeAttribute('hidden');
         map.setZoom(13);
         map.getSource('places').setData(ev.result.geometry);
-
-        console.log('ev',ev)
         built_address = ev.result.place_name
         console.log("coordinates ", ev.result.geometry.coordinates[0])
         // Api for data
-        const url =  baseUrl+ [ev.result.geometry.coordinates[1],ev.result.geometry.coordinates[0]];
+        const url = baseUrl + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
         fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'cors', // no-cors, *cors, same-origin
@@ -218,7 +220,7 @@ function getGeocoderResults(){
                             "id": data[i].id,
                             "stationName": data[i].alias,
                             "isClosed": data[i].is_closed,
-                            "imageUrl" : data[i].image_url,
+                            "imageUrl": data[i].image_url,
                             "Address1": data[i].location.address1,
                             "city": data[i].location.city,
                             "postalCode": data[i].location.zip_code,
@@ -232,7 +234,7 @@ function getGeocoderResults(){
                     // create DOM element for the marker
                     var el = document.createElement('div');
                     el.id = 'marker';
-// create the marker
+                    // create the marker
                     var marker = new mapboxgl.Marker()
                         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                         .addTo(map);

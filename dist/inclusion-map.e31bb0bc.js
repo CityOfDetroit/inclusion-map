@@ -177,7 +177,8 @@ map.on('load', function () {
     "paint": {
       "circle-radius": 10,
       "circle-color": "#007cbf"
-    }
+    },
+    'filter': ['in', 'FIPS', '']
   });
   spinner.removeAttribute('hidden');
   var url = baseUrl + '42.3314,-83.0458';
@@ -198,7 +199,7 @@ map.on('load', function () {
     console.log(data);
 
     for (var i = 0; i < data.length; i++) {
-      var popup = new mapboxgl.Popup().setHTML('<div class="card mb-3">' + '  <div class="row no-gutters">' + '    <div class="col-md-4">' + '<img class="card-img" src="' + data[i].image_url + '"/>' + '    </div>' + '    <div class="col-md-8">' + '      <div class="card-body">' + '        <h6 class="card-title">' + data[i].name + '</h6>' + '<p class="place_address">' + '<a href="">' + data[i].location.address1 + ',' + data[i].location.city + ',' + data[i].location.state + ',' + data[i].location.zip_code + '</a>' + '</p>' + '<div class="rating" data-rating="' + data[i].rating + '"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>' + '      </div>' + '    </div>' + '  </div>' + '</div>'); //console.log(data[i].rating);
+      var popup = new mapboxgl.Popup().setHTML(); //console.log(data[i].rating);
       // .setText(data[i].name);
       // create DOM element for the marker
 
@@ -213,11 +214,11 @@ map.on('load', function () {
   getGeocoderResults();
 }); // then data
 
+var theMarker = {};
 map.on('click', function (e) {
+  // Add spinner function
   spinner.removeAttribute('hidden');
-  var coords = "lat: ".concat(e.lngLat.lat, " <br> lng: ").concat(e.lngLat.lng); // create the popup
-
-  var popup = new mapboxgl.Popup().setText(coords); //base url
+  var coords = "lat: ".concat(e.lngLat.lat, " <br> lng: ").concat(e.lngLat.lng); //base url
 
   var url = baseUrl + [e.lngLat.lat, e.lngLat.lng]; //fetch to get api from html
 
@@ -250,7 +251,6 @@ map.on('click', function (e) {
           "stationName": data[i].alias,
           "isClosed": data[i].is_closed,
           "imageUrl": data[i].image_url,
-          "Address1": data[i].location.address1,
           "city": data[i].location.city,
           "postalCode": data[i].location.zip_code
         },
@@ -260,19 +260,25 @@ map.on('click', function (e) {
         }
       });
       console.log(data[i]);
-      var popup = new mapboxgl.Popup().setHTML('<div class="card mb-3">' + '  <div class="row no-gutters">' + '    <div class="col-md-4">' + '<img class="card-img" src="' + data[i].image_url + '"/>' + '    </div>' + '    <div class="col-md-8">' + '      <div class="card-body">' + '        <h6 class="card-title">' + data[i].name + '</h6>' + '<p class="place_address">' + '<a href="">' + data[i].location.address1 + ',' + data[i].location.city + ',' + data[i].location.state + ',' + data[i].location.zip_code + '</a>' + '</p>' + '<div class="rating" data-rating="' + data[i].rating + '"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>' + '      </div>' + '    </div>' + '  </div>' + '</div>'); // create DOM element for the marker
-
       var el = document.createElement('div');
       el.id = 'marker'; // create the marker
 
-      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
     }
   }); // create DOM element for the marker
 
   var el = document.createElement('div');
-  el.id = 'marker'; // create the marker
+  el.id = 'theMarker';
 
-  new mapboxgl.Marker(el).setLngLat(e.lngLat).setPopup(popup).addTo(map);
+  if (theMarker.length > 1) {
+    map.removeLayer(theMarker);
+  }
+
+  ; //Add a marker to show where you clicked.
+  // create the marker
+
+  var marker = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
+  console.log("marker" + marker.length);
 });
 var getGeoJson = {
   type: "FeatureCollection",
@@ -292,6 +298,7 @@ var checkStatus = function checkStatus(response) {
 };
 
 var spinner = document.getElementById("spinner");
+var setdefault = true;
 
 function showSpinner() {
   spinner.className = "show";
@@ -305,7 +312,6 @@ function getGeocoderResults() {
     spinner.removeAttribute('hidden');
     map.setZoom(13);
     map.getSource('places').setData(ev.result.geometry);
-    console.log('ev', ev);
     built_address = ev.result.place_name;
     console.log("coordinates ", ev.result.geometry.coordinates[0]); // Api for data
 
@@ -348,13 +354,12 @@ function getGeocoderResults() {
             "icon-allow-overlap": true
           }
         });
-        console.log(data[i]);
-        var popup = new mapboxgl.Popup().setHTML('<div class="card mb-3">' + '  <div class="row no-gutters">' + '    <div class="col-md-4">' + '<img class="card-img" src="' + data[i].image_url + '"/>' + '    </div>' + '    <div class="col-md-8">' + '      <div class="card-body">' + '        <h6 class="card-title">' + data[i].name + '</h6>' + '<p class="place_address">' + '<a href="">' + data[i].location.address1 + ',' + data[i].location.city + ',' + data[i].location.state + ',' + data[i].location.zip_code + '</a>' + '</p>' + '<div class="rating" data-rating="' + data[i].rating + '"><div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> <div class="star"></div> </div>' + '      </div>' + '    </div>' + '  </div>' + '</div>'); // create DOM element for the marker
+        console.log(data[i]); // create DOM element for the marker
 
         var el = document.createElement('div');
         el.id = 'marker'; // create the marker
 
-        var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+        var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
       }
     });
   });
@@ -388,7 +393,7 @@ function getGeocoderResults() {
 //         console.log('device doesnt support location')
 //     }
 // }; /* END getUserLocation(); */
-},{}],"../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -416,7 +421,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63461" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39553" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -447,9 +452,8 @@ if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
         assetsToAccept.forEach(function (v) {
           hmrAcceptRun(v[0], v[1]);
         });
-      } else if (location.reload) {
-        // `location` global exists in a web worker context but lacks `.reload()` function.
-        location.reload();
+      } else {
+        window.location.reload();
       }
     }
 
@@ -592,5 +596,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
+},{}]},{},["../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
 //# sourceMappingURL=/inclusion-map.e31bb0bc.js.map
