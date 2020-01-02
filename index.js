@@ -42,6 +42,7 @@ const geoJson = {
     type: "FeatureCollection",
     features: [],
 };
+var el = document.createElement('div');
 //data to onLoad
 map.on('load', function () {
     map.addSource('places', {
@@ -72,14 +73,14 @@ map.on('load', function () {
              spinner.setAttribute("hidden", "");
             console.log(data)
             for (let i = 0; i < data.length; i++) {
-                var popup = new mapboxgl.Popup()
-                    .setHTML(
-                    );
                 //console.log(data[i].rating);
                 // .setText(data[i].name);
                 // create DOM element for the marker
-                var el = document.createElement('div');
+
                 el.id = 'marker';
+                el.addEventListener('click', function(){
+                    marker.remove();
+                })
                 // create the marker
                 var marker = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
@@ -95,7 +96,7 @@ map.on('click', (e) => {
     console.log("e" + e)
   // Add spinner function
     spinner.removeAttribute('hidden');
-    map.flyTo({ center: e.features[0].geometry.coordinates });
+    // map.flyTo({ center: e.features[0].geometry.coordinates });
     //base url
     const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
    
@@ -135,26 +136,26 @@ map.on('click', (e) => {
                 });
                 console.log(data[i]);
 
-                var el = document.createElement('div');
+
                 el.id = 'marker';
                 // create the marker
                 var marker = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                     .addTo(map);
+
                 // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
             }
         })
     // create DOM element for the marker
-    var el = document.createElement('div');
-    el.id = 'Marker';
-   
+
+    el.id = 'marker';
+
 //Add a marker to show where you clicked.
 
     // create the marker
     var marker = new mapboxgl.Marker(el)
         .setLngLat(e.lngLat)
         .addTo(map);
-        console.log("marker"+marker.length);
 });
 
 let getGeoJson = {
@@ -176,6 +177,7 @@ const spinner = document.getElementById("spinner");
 let setdefault = true;
 
 function showSpinner() {
+    
     spinner.className = "show";
     setTimeout(() => {
         spinner.className = spinner.className.replace("show", "");
@@ -226,7 +228,7 @@ function getGeocoderResults() {
                     });
                     console.log(data[i]);
                     // create DOM element for the marker
-                    var el = document.createElement('div');
+
                     el.id = 'marker';
                     // create the marker
                     var marker = new mapboxgl.Marker()
