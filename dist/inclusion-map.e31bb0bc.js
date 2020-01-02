@@ -161,7 +161,28 @@ var geoJson = {
   type: "FeatureCollection",
   features: []
 };
-var el = document.createElement('div'); //data to onLoad
+
+function hide() {
+  var markers = document.getElementsByClassName("mapboxgl-marker");
+
+  for (var _i = 0; _i < markers.length; _i++) {
+    markers[_i].style.visibility = "hidden";
+  }
+
+  return;
+}
+
+function show() {
+  var markers = document.getElementsByClassName("mapboxgl-marker");
+
+  for (var _i2 = 0; _i2 < markers.length; _i2++) {
+    markers[_i2].style.visibility = "visible";
+  }
+
+  return;
+}
+
+var data, i; //data to onLoad
 
 map.on('load', function () {
   map.addSource('places', {
@@ -195,26 +216,27 @@ map.on('load', function () {
     spinner.setAttribute("hidden", "");
     console.log(data);
 
-    for (var i = 0; i < data.length; i++) {
-      //console.log(data[i].rating);
+    for (var _i3 = 0; _i3 < data.length; _i3++) {
       // .setText(data[i].name);
       // create DOM element for the marker
-      el.id = 'marker';
-      el.addEventListener('click', function () {
-        marker.remove();
-      }); // create the marker
+      var el = document.createElement('div');
+      el.id = 'marker'; // create the marker
 
-      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map);
+      var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i3].coordinates.longitude, data[_i3].coordinates.latitude]).addTo(map); // if(markerResults >= 1){
+      //     markerResults[1].remove()
+      // }else{
+      //     markerResults.remove();
+      // }
     }
 
     ;
   });
   getGeocoderResults();
 }); // then data
+// var geocoderMarkerResults,markerResults,pinMarkerResults;
 
-var theMarker = {};
 map.on('click', function (e) {
-  console.log("e" + e); // Add spinner function
+  hide(); // Add spinner function
 
   spinner.removeAttribute('hidden'); // map.flyTo({ center: e.features[0].geometry.coordinates });
   //base url
@@ -235,37 +257,41 @@ map.on('click', function (e) {
     return resp.json();
   }) // Transform the data into json
   .then(function (data) {
+    data = data;
+    i = i;
     spinner.setAttribute("hidden", "");
     console.log(data);
     var geoJson = getGeoJson;
 
-    for (var i = 0; i < data.length; i++) {
+    for (var _i4 = 0; _i4 < data.length; _i4++) {
       getGeoJson.features.push({
         "type": "Feature",
         "geometry": {
           "type": "Point",
-          "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+          "coordinates": [data[_i4].coordinates.longitude, data[_i4].coordinates.latitude]
         },
         "properties": {
-          "id": data[i].id,
-          "stationName": data[i].alias,
-          "isClosed": data[i].is_closed,
-          "imageUrl": data[i].image_url,
-          "city": data[i].location.city,
-          "postalCode": data[i].location.zip_code
+          "id": data[_i4].id,
+          "stationName": data[_i4].alias,
+          "isClosed": data[_i4].is_closed,
+          "imageUrl": data[_i4].image_url,
+          "city": data[_i4].location.city,
+          "postalCode": data[_i4].location.zip_code
         },
         "layout": {
           "icon-image": "{icon}-15",
           "icon-allow-overlap": true
         }
       });
-      console.log(data[i]);
+      console.log(data[_i4]);
+      var el = document.createElement('div');
       el.id = 'marker'; // create the marker
 
-      var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+      var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i4].coordinates.longitude, data[_i4].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
     }
   }); // create DOM element for the marker
 
+  var el = document.createElement('div');
   el.id = 'marker'; //Add a marker to show where you clicked.
   // create the marker
 
@@ -289,7 +315,6 @@ var checkStatus = function checkStatus(response) {
 };
 
 var spinner = document.getElementById("spinner");
-var setdefault = true;
 
 function showSpinner() {
   spinner.className = "show";
@@ -300,6 +325,7 @@ function showSpinner() {
 
 function getGeocoderResults() {
   geocoder.on('result', function (ev) {
+    hide();
     spinner.removeAttribute('hidden');
     map.getSource('places').setData(ev.result.geometry);
     built_address = ev.result.place_name;
@@ -319,36 +345,40 @@ function getGeocoderResults() {
       return resp.json();
     }) // Transform the data into json
     .then(function (data) {
+      show();
+      data = data;
+      i = i;
       spinner.setAttribute("hidden", "");
       console.log(data);
       var geoJson = getGeoJson;
 
-      for (var i = 0; i < data.length; i++) {
+      for (var _i5 = 0; _i5 < data.length; _i5++) {
         getGeoJson.features.push({
           "type": "Feature",
           "geometry": {
             "type": "Point",
-            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+            "coordinates": [data[_i5].coordinates.longitude, data[_i5].coordinates.latitude]
           },
           "properties": {
-            "id": data[i].id,
-            "stationName": data[i].alias,
-            "isClosed": data[i].is_closed,
-            "imageUrl": data[i].image_url,
-            "Address1": data[i].location.address1,
-            "city": data[i].location.city,
-            "postalCode": data[i].location.zip_code
+            "id": data[_i5].id,
+            "stationName": data[_i5].alias,
+            "isClosed": data[_i5].is_closed,
+            "imageUrl": data[_i5].image_url,
+            "Address1": data[_i5].location.address1,
+            "city": data[_i5].location.city,
+            "postalCode": data[_i5].location.zip_code
           },
           "layout": {
             "icon-image": "{icon}-15",
             "icon-allow-overlap": true
           }
         });
-        console.log(data[i]); // create DOM element for the marker
+        console.log(data[_i5]); // create DOM element for the marker
 
+        var el = document.createElement('div');
         el.id = 'marker'; // create the marker
 
-        var marker = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+        var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i5].coordinates.longitude, data[_i5].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
       }
     });
   });
@@ -410,7 +440,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45743" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32897" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
