@@ -227,7 +227,7 @@ function getGeocoderResults() {
             .then(resp => resp.json())
             // Transform the data into json
             .then((data) => {
-                show();
+              
                 data=data;i=i;
                 spinner.setAttribute("hidden", "");
                 console.log(data)
@@ -256,7 +256,7 @@ function getGeocoderResults() {
                     console.log(data[i]);
                     // create DOM element for the marker
                     var el = document.createElement('div');
-                    el.id = 'marker';
+                    el.id = 'geoMaker';
                     // create the marker
                     var MarkerResults = new mapboxgl.Marker()
                         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])

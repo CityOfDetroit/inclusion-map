@@ -345,7 +345,6 @@ function getGeocoderResults() {
       return resp.json();
     }) // Transform the data into json
     .then(function (data) {
-      show();
       data = data;
       i = i;
       spinner.setAttribute("hidden", "");
@@ -376,7 +375,7 @@ function getGeocoderResults() {
         console.log(data[_i5]); // create DOM element for the marker
 
         var el = document.createElement('div');
-        el.id = 'marker'; // create the marker
+        el.id = 'geoMaker'; // create the marker
 
         var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i5].coordinates.longitude, data[_i5].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
       }
@@ -440,7 +439,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32897" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57148" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -471,8 +470,9 @@ if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
         assetsToAccept.forEach(function (v) {
           hmrAcceptRun(v[0], v[1]);
         });
-      } else {
-        window.location.reload();
+      } else if (location.reload) {
+        // `location` global exists in a web worker context but lacks `.reload()` function.
+        location.reload();
       }
     }
 
