@@ -33,7 +33,8 @@ const geocoder = new MapboxGeocoder({
     mapboxgl: mapboxgl,
 });
 // Add zoom and rotation controls to the map.
-
+//  var geocoderV = document.getElementById('geocoder');
+//  geocoderV.appendChild(geocoder.onAdd(map));
  map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl());
 
@@ -44,9 +45,7 @@ const geoJson = {
     features: [],
 };
 
-    function toggle(){
-        geocoderV.disabled = true;
-    }
+
 
 function hide() {
     let markers = document.getElementsByClassName("mapboxgl-marker");
@@ -106,13 +105,6 @@ map.on('load', function () {
                 var MarkerResults = new mapboxgl.Marker()
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                     .addTo(map);
-
-                // if(markerResults >= 1){
-                //     markerResults[1].remove()
-                // }else{
-                //     markerResults.remove();
-                // }
-
             };
         });
 
@@ -124,9 +116,7 @@ map.on('load', function () {
 
 
 map.on('click', (e) => {
-
     hide()
-
   // Add spinner function
     spinner.removeAttribute('hidden');
     // map.flyTo({ center: e.features[0].geometry.coordinates });
@@ -143,9 +133,6 @@ map.on('click', (e) => {
         .then(resp => resp.json())
         // Transform the data into json
         .then((data) => {
-
-             data = data;
-             i=i;
             spinner.setAttribute("hidden", "");
             console.log(data)
             const geoJson = getGeoJson;
@@ -236,7 +223,7 @@ function getGeocoderResults() {
             // Transform the data into json
             .then((data) => {
               
-                data=data;i=i;
+
                 spinner.setAttribute("hidden", "");
                 console.log(data)
                 const geoJson = getGeoJson;

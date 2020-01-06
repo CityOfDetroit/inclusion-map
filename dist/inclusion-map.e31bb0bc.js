@@ -152,6 +152,8 @@ var geocoder = new MapboxGeocoder({
   },
   mapboxgl: mapboxgl
 }); // Add zoom and rotation controls to the map.
+//  var geocoderV = document.getElementById('geocoder');
+//  geocoderV.appendChild(geocoder.onAdd(map));
 
 map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl()); // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
@@ -161,10 +163,6 @@ var geoJson = {
   type: "FeatureCollection",
   features: []
 };
-
-function toggle() {
-  geocoderV.disabled = true;
-}
 
 function hide() {
   var markers = document.getElementsByClassName("mapboxgl-marker");
@@ -226,11 +224,7 @@ map.on('load', function () {
       var el = document.createElement('div');
       el.id = 'marker'; // create the marker
 
-      var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i3].coordinates.longitude, data[_i3].coordinates.latitude]).addTo(map); // if(markerResults >= 1){
-      //     markerResults[1].remove()
-      // }else{
-      //     markerResults.remove();
-      // }
+      var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i3].coordinates.longitude, data[_i3].coordinates.latitude]).addTo(map);
     }
 
     ;
@@ -261,8 +255,6 @@ map.on('click', function (e) {
     return resp.json();
   }) // Transform the data into json
   .then(function (data) {
-    data = data;
-    i = i;
     spinner.setAttribute("hidden", "");
     console.log(data);
     var geoJson = getGeoJson;
@@ -349,8 +341,6 @@ function getGeocoderResults() {
       return resp.json();
     }) // Transform the data into json
     .then(function (data) {
-      data = data;
-      i = i;
       spinner.setAttribute("hidden", "");
       console.log(data);
       var geoJson = getGeoJson;
@@ -412,7 +402,10 @@ function getGeocoderResults() {
 //         }
 //     } else {
 //         // if device doesnt support location
-//         console.log('device doesnt support location,"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+//         console.log('device doesnt support location')
+//     }
+// }; /* END getUserLocation(); */
+},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -440,7 +433,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32897" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41147" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -616,5 +609,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/inclusion-map.e31bb0bc.js.map
 //# sourceMappingURL=/inclusion-map.e31bb0bc.js.map
