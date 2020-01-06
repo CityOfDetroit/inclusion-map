@@ -33,7 +33,8 @@ const geocoder = new MapboxGeocoder({
     mapboxgl: mapboxgl,
 });
 // Add zoom and rotation controls to the map.
-map.addControl(geocoder);
+
+ map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl());
 
 // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
@@ -42,6 +43,11 @@ const geoJson = {
     type: "FeatureCollection",
     features: [],
 };
+
+    function toggle(){
+        geocoderV.disabled = true;
+    }
+
 function hide() {
     let markers = document.getElementsByClassName("mapboxgl-marker");
     for (let i = 0; i < markers.length; i++) {
@@ -118,7 +124,9 @@ map.on('load', function () {
 
 
 map.on('click', (e) => {
+
     hide()
+
   // Add spinner function
     spinner.removeAttribute('hidden');
     // map.flyTo({ center: e.features[0].geometry.coordinates });
