@@ -11,6 +11,7 @@ let baseUrl = "https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/";
 //================ geocoder for address search====================//
 const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
+    zoom: 12,
     // limit results to North America
     countries: 'us',
     marker: {
@@ -45,8 +46,6 @@ const geoJson = {
     features: [],
 };
 
-
-
 function hide() {
     let markers = document.getElementsByClassName("mapboxgl-marker");
     for (let i = 0; i < markers.length; i++) {
@@ -62,7 +61,6 @@ function show() {
     }
     return
 }
-var data, i;
 
 //data to onLoad
 map.on('load', function () {
@@ -80,8 +78,8 @@ map.on('load', function () {
         }
        
     });
-   
- spinner.removeAttribute('hidden');
+
+    loader.removeAttribute('hidden');
     const url = baseUrl + '42.3314,-83.0458';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -92,8 +90,9 @@ map.on('load', function () {
         // Transform the data into json
         .then((data) => {
 
-             spinner.setAttribute("hidden", "");
+            loader.setAttribute("hidden", "");
             console.log(data)
+            ;
             for (let i = 0; i < data.length; i++) {
                 // .setText(data[i].name);
                 // create DOM element for the marker
@@ -106,11 +105,13 @@ map.on('load', function () {
                     .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                     .addTo(map);
             };
-        });
+        }) .catch(err => {
+        console.error("erroooooooo"+err)
+    })// then data
 
     getGeocoderResults()
 
-})// then data
+})
 
 // var geocoderMarkerResults,markerResults,pinMarkerResults;
 
@@ -118,7 +119,7 @@ map.on('load', function () {
 map.on('click', (e) => {
     hide()
   // Add spinner function
-    spinner.removeAttribute('hidden');
+    loader.removeAttribute('hidden');
     // map.flyTo({ center: e.features[0].geometry.coordinates });
     //base url
     const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
@@ -133,7 +134,7 @@ map.on('click', (e) => {
         .then(resp => resp.json())
         // Transform the data into json
         .then((data) => {
-            spinner.setAttribute("hidden", "");
+            loader.setAttribute("hidden", "");
             console.log(data)
             const geoJson = getGeoJson;
             for (let i = 0; i < data.length; i++) {
@@ -167,6 +168,9 @@ map.on('click', (e) => {
                 // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
             }
         })
+        .catch(err => {
+            console.error("erroooooooo"+err)
+        })
     // create DOM element for the marker
     var el = document.createElement('div');
     el.id = 'marker';
@@ -177,35 +181,45 @@ map.on('click', (e) => {
         .addTo(map);
 
 });
+var former = console.log;
+console.log = function(msg){
+    former(msg);
+    document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
+}
+
+window.onerror = function(message, url, linenumber) {
+    console.log("JavaScript error: " + message + " on line " +
+        linenumber + " for " + url);
+}
 
 let getGeoJson = {
     type: "FeatureCollection",
     features: [],
 }
-const checkStatus = response => {
-    if (response.ok) {
+const checkStatus = res => {
+    if (res.ok) {
         return response;
-        console.log("response" + response)
+        console.log("response" + res)
     } else {
-        const error = new Error(response.statusText);
-        error.response = response;
+        const error = new Error(res.statusText);
+        error.res = res;
         throw error;
         console.log("error" + error)
     }
 }
-const spinner = document.getElementById("spinner");
+const loader = document.getElementById("initial-loader-overlay");
 
 function showSpinner() {
-    spinner.className = "show";
+    loader.className = "active";
     setTimeout(() => {
-        spinner.className = spinner.className.replace("show", "");
+        loader.className = loader.className.replace("active", "");
     }, 5000);
 }
 function getGeocoderResults() {
 
     geocoder.on('result', function (ev) {
         hide();
-        spinner.removeAttribute('hidden');
+        loader.removeAttribute('hidden');
        
         map.getSource('places').setData(ev.result.geometry);
         built_address = ev.result.place_name
@@ -218,14 +232,12 @@ function getGeocoderResults() {
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             redirect: 'follow', // manual, *follow, error
         })
-            .then(checkStatus)
+            // .then(checkStatus)
             .then(resp => resp.json())
             // Transform the data into json
             .then((data) => {
-              
-
-                spinner.setAttribute("hidden", "");
-                console.log(data)
+                loader.setAttribute("hidden", "");
+                console.log(data.error)
                 const geoJson = getGeoJson;
                 for (let i = 0; i < data.length; i++) {
                     getGeoJson.features.push({
@@ -256,10 +268,13 @@ function getGeocoderResults() {
                     var MarkerResults = new mapboxgl.Marker()
                         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                         .addTo(map);
-
+// console.log("data[i].coordinates.longitude" + data[i].coordinates.longitude);
                     // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
                 }
             })
+            // .catch(err => {
+            //     console.error("err"+err)
+            // })
 
     });
 }

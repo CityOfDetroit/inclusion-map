@@ -3,6 +3,35 @@ body {
   margin: 0;
   padding: 0;
 }
+body #initial-loader-overlay {
+  display: none;
+}
+body #initial-loader-overlay article {
+  padding: 0;
+  transition: all 0.2s ease-in-out;
+}
+body #initial-loader-overlay.active {
+  position: absolute;
+  z-index: 5;
+  height: 100vh;
+  width: 100vw;
+  padding: 1em;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+}
+body #initial-loader-overlay.active article {
+  margin: auto;
+  position: relative;
+  max-width: 100%;
+  padding: 4em 2em;
+  transition: all 0.2s ease-in-out;
+}
+body #initial-loader-overlay.active article div {
+  padding: 0.5em;
+}
+body #initial-loader-overlay.active article div p {
+  font-size: 1.28em;
+}
 body #main #map {
   position: absolute;
   top: 0;

@@ -9,75 +9,36 @@
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
     <link rel="stylesheet" href="style.scss">
+    <link rel="stylesheet" href="loader.scss">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
     <style>
-        #spinner:not([hidden]) {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        #spinner::after {
-            content: "";
-            width: 80px;
-            height: 80px;
-            border: 2px solid #f3f3f3;
-            border-top: 3px solid #f25a41;
-            border-radius: 100%;
-            will-change: transform;
-            animation: spin 1s infinite linear;
-
-        }
-        #spinner{
-            opacity: 0.5;
-            z-index: 100;
-            background-color: black;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .place_address{
-         width: 100px;
-        }
-        .mapboxgl-popup{
-            max-width: 540px;
-        }
-        #marker {
-            color: red;
-            display: block;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 0;
-        }
-        .mapboxgl-marker {
-            height: 20px;
-            width: 20px;
-            border: 1px solid black;
-            border-radius: 50%;
-            background-color: #305bad;
-        }
     </style>
     <script src="node_modules/yelp-fusion/lib/index.js"></script>
 </head>
 <body>
-<div id="spinner"></div>
+<!--<div id="spinner"></div>-->
+<section id="initial-loader-overlay" class="active">
+    <article>
+        <div>
+            <div class="loader">
+                <div class="loader__bar"></div>
+                <div class="loader__bar"></div>
+                <div class="loader__bar"></div>
+                <div class="loader__bar"></div>
+                <div class="loader__bar"></div>
+                <div class="loader__ball"></div>
+            </div>
+            <p>LOADING</p>
+        </div>
+    </article>
+</section>
 <div id="main">
     <div class='map_geo' id='map' ></div>
     <div type="text" class="geocoder"required  id="geocoder" placeholder="Address"></div>
+    <div id="mylog"></div>
 </div>
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
 <script type="text/javascript" src="index.js"></script>
