@@ -168,8 +168,8 @@ var geoJson = {
 function hide() {
   var markers = document.getElementsByClassName("mapboxgl-marker");
 
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].style.visibility = "hidden";
+  for (var _i = 0; _i < markers.length; _i++) {
+    markers[_i].style.visibility = "hidden";
   }
 
   return;
@@ -178,28 +178,29 @@ function hide() {
 function show() {
   var markers = document.getElementsByClassName("mapboxgl-marker");
 
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].style.visibility = "visible";
+  for (var _i2 = 0; _i2 < markers.length; _i2++) {
+    markers[_i2].style.visibility = "visible";
   }
 
   return;
-} //data to onLoad
+}
 
+var layer = {
+  "id": "places",
+  "source": "places",
+  "type": "circle",
+  "paint": {
+    "circle-radius": 10,
+    "circle-color": "#007cbf"
+  }
+}; //data to onLoad
 
 map.on('load', function () {
   map.addSource('places', {
     "type": 'geojson',
     "data": geoJson
   });
-  map.addLayer({
-    "id": "places",
-    "source": "places",
-    "type": "circle",
-    "paint": {
-      "circle-radius": 10,
-      "circle-color": "#007cbf"
-    }
-  });
+  map.addLayer(layer);
   loader.removeAttribute('hidden');
   var url = baseUrl + '42.3314,-83.0458';
   fetch(url, {
@@ -217,24 +218,43 @@ map.on('load', function () {
   .then(function (data) {
     loader.setAttribute("hidden", "");
     console.log(data);
+    geoJson.features.forEach(function (marker) {});
 
-    for (var i = 0; i < data.length; i++) {
+    var _loop = function _loop(_i3) {
       // .setText(data[i].name);
-      // create DOM element for the marker
-      var el = document.createElement('div');
-      el.id = 'marker'; // create the marker
+      // create the marker
+      popup = new mapboxgl.Popup().setHTML('<h3>' + data[_i3].alias + '</h3>'); // create a HTML element for each feature
 
-      var MarkerResults = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map);
+      el = document.createElement('div');
+      el.id = 'marker'; // make a marker for each feature and add to the map
+
+      var myMarker = new mapboxgl.Marker({
+        offset: [0, -25]
+      }).setLngLat([data[_i3].coordinates.longitude, data[_i3].coordinates.latitude]).setPopup(popup).addTo(map);
+      var markerDiv = myMarker.getElement();
+      markerDiv.addEventListener('mouseenter', function () {
+        return myMarker.togglePopup();
+      });
+      markerDiv.addEventListener('mouseleave', function () {
+        return myMarker.togglePopup();
+      });
+    };
+
+    for (var _i3 = 0; _i3 < data.length; _i3++) {
+      var popup;
+      var el;
+
+      _loop(_i3);
     }
 
     ;
-  }).catch(function (err) {
-    console.error("erroooooooo" + err);
-  }); // then data
-
+  });
+  console.log("getgeojson" + getGeoJson.features.geometry);
   getGeocoderResults();
 }); // var geocoderMarkerResults,markerResults,pinMarkerResults;
 
+var data = data;
+var i = i;
 map.on('click', function (e) {
   hide(); // Add spinner function
 
@@ -261,41 +281,49 @@ map.on('click', function (e) {
     console.log(data);
     var geoJson = getGeoJson;
 
-    for (var i = 0; i < data.length; i++) {
+    for (var _i4 = 0; _i4 < data.length; _i4++) {
       getGeoJson.features.push({
         "type": "Feature",
         "geometry": {
           "type": "Point",
-          "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+          "coordinates": [data[_i4].coordinates.longitude, data[_i4].coordinates.latitude]
         },
         "properties": {
-          "id": data[i].id,
-          "stationName": data[i].alias,
-          "isClosed": data[i].is_closed,
-          "imageUrl": data[i].image_url,
-          "city": data[i].location.city,
-          "postalCode": data[i].location.zip_code
+          "id": data[_i4].id,
+          "stationName": data[_i4].alias,
+          "isClosed": data[_i4].is_closed,
+          "imageUrl": data[_i4].image_url,
+          "city": data[_i4].location.city,
+          "postalCode": data[_i4].location.zip_code
         },
         "layout": {
           "icon-image": "{icon}-15",
           "icon-allow-overlap": true
         }
       });
-      console.log(data[i]);
+      console.log(data[_i4]);
       var el = document.createElement('div');
       el.id = 'marker'; // create the marker
 
-      var MarkerResults = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+      var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i4].coordinates.longitude, data[_i4].coordinates.latitude]).addTo(map); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
     }
   }).catch(function (err) {
     console.error("erroooooooo" + err);
-  }); // create DOM element for the marker
+  });
+  var popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].alias + '</h3>'); // create DOM element for the marker
 
   var el = document.createElement('div');
   el.id = 'marker'; //Add a marker to show where you clicked.
   // create the marker
 
-  var marker = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
+  var marker = new mapboxgl.Marker(el).setPopup(popup).setLngLat(e.lngLat).addTo(map);
+  var markerDiv = MarkerResults.getElement();
+  markerDiv.addEventListener('mouseenter', function () {
+    return MarkerResults.togglePopup();
+  });
+  markerDiv.addEventListener('mouseleave', function () {
+    return MarkerResults.togglePopup();
+  });
 });
 var former = console.log;
 
@@ -361,33 +389,33 @@ function getGeocoderResults() {
       console.log(data.error);
       var geoJson = getGeoJson;
 
-      for (var i = 0; i < data.length; i++) {
+      for (var _i5 = 0; _i5 < data.length; _i5++) {
         getGeoJson.features.push({
           "type": "Feature",
           "geometry": {
             "type": "Point",
-            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+            "coordinates": [data[_i5].coordinates.longitude, data[_i5].coordinates.latitude]
           },
           "properties": {
-            "id": data[i].id,
-            "stationName": data[i].alias,
-            "isClosed": data[i].is_closed,
-            "imageUrl": data[i].image_url,
-            "Address1": data[i].location.address1,
-            "city": data[i].location.city,
-            "postalCode": data[i].location.zip_code
+            "id": data[_i5].id,
+            "stationName": data[_i5].alias,
+            "isClosed": data[_i5].is_closed,
+            "imageUrl": data[_i5].image_url,
+            "Address1": data[_i5].location.address1,
+            "city": data[_i5].location.city,
+            "postalCode": data[_i5].location.zip_code
           },
           "layout": {
             "icon-image": "{icon}-15",
             "icon-allow-overlap": true
           }
         });
-        console.log(data[i]); // create DOM element for the marker
+        console.log(data[_i5]); // create DOM element for the marker
 
         var el = document.createElement('div');
         el.id = 'geoMaker'; // create the marker
 
-        var MarkerResults = new mapboxgl.Marker().setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).addTo(map); // console.log("data[i].coordinates.longitude" + data[i].coordinates.longitude);
+        var MarkerResults = new mapboxgl.Marker().setLngLat([data[_i5].coordinates.longitude, data[_i5].coordinates.latitude]).addTo(map); // console.log("data[i].coordinates.longitude" + data[i].coordinates.longitude);
         // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
       }
     }); // .catch(err => {
@@ -452,7 +480,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45713" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60846" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -483,8 +511,9 @@ if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
         assetsToAccept.forEach(function (v) {
           hmrAcceptRun(v[0], v[1]);
         });
-      } else {
-        window.location.reload();
+      } else if (location.reload) {
+        // `location` global exists in a web worker context but lacks `.reload()` function.
+        location.reload();
       }
     }
 
