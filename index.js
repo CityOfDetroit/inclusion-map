@@ -73,8 +73,10 @@ let layer = {
     }
    
 }
+var data;
 //data to onLoad
-map.on('load', function () {
+map.on('load', function (data) {
+    console.log(data)
     map.addSource('places', {
         "type": 'geojson',
         "data": geoJson
@@ -125,17 +127,14 @@ map.on('load', function () {
               markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
             };
         }) 
-        console.log("getgeojson" + getGeoJson.features.geometry)
-    getGeocoderResults()
+        getGeocoderResults()
 
 })
 
-// var geocoderMarkerResults,markerResults,pinMarkerResults;
-const data = data;
-const i = i;
-
-map.on('click', (e) => {
+map.on('click', (e, data, i ) => {
+   console.log(data)
     hide()
+    console.log(e);
   // Add spinner function
     loader.removeAttribute('hidden');
     // map.flyTo({ center: e.features[0].geometry.coordinates });
@@ -151,11 +150,13 @@ map.on('click', (e) => {
     })
         .then(resp => resp.json())
         // Transform the data into json
+        
         .then((data) => {
             loader.setAttribute("hidden", "");
-            console.log(data)
             const geoJson = getGeoJson;
-            for (let i = 0; i < data.length; i++) {
+            
+            for ( i = 0; i < data.length; i++) {
+                console.log(data.length)
                 getGeoJson.features.push({
                     "type": "Feature",
                     "geometry": {
@@ -175,73 +176,63 @@ map.on('click', (e) => {
                         "icon-allow-overlap": true
                     }
                 });
-                console.log(data[i]);
-               
-            
+                var popup = new mapboxgl.Popup()
+                           .setHTML('<h3>'+ data[i].alias+'</h3>');
+                         
                 var el = document.createElement('div');
                 el.id = 'marker';
                 // create the marker
-                var MarkerResults = new mapboxgl.Marker()
-                    .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                    .addTo(map);
+                const myMarker = new mapboxgl.Marker({
+                    offset: [0, -25]
+                })
+                .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+                .setPopup(popup)
+                .addTo(map);
+                    const markerDiv = myMarker.getElement();  
+                    markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
+                    markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
                    
                 // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
             }
         })
-        .catch(err => {
-            console.error("erroooooooo"+err)
-        })
-        var popup = new mapboxgl.Popup()
-        .setHTML('<h3>' + data[i].alias + '</h3>');
+        
+        
     // create DOM element for the marker
     var el = document.createElement('div');
     el.id = 'marker';
 //Add a marker to show where you clicked.
     // create the marker
-     var marker = new mapboxgl.Marker(el)
-     .setPopup(popup)
+     var MarkerResults = new mapboxgl.Marker(el)
         .setLngLat(e.lngLat)
-        .addTo(map);
-        const markerDiv = MarkerResults.getElement();  
-            
-        markerDiv.addEventListener('mouseenter', () => MarkerResults.togglePopup());
-        markerDiv.addEventListener('mouseleave', () => MarkerResults.togglePopup());
-
+        .addTo(map);     
 });
-var former = console.log;
-console.log = function(msg){
-    former(msg);
-    document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
-}
+// var former = console.log;
+// console.log = function(msg){
+//     former(msg);
+//     document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
+// }
 
-window.onerror = function(message, url, linenumber) {
-    console.log("JavaScript error: " + message + " on line " +
-        linenumber + " for " + url);
-}
+// window.onerror = function(message, url, linenumber) {
+//     console.log("JavaScript error: " + message + " on line " +
+//         linenumber + " for " + url);
+// }
 
 let getGeoJson = {
     type: "FeatureCollection",
     features: [],
 }
-const checkStatus = res => {
-    if (res.ok) {
-        return response;
-        console.log("response" + res)
-    } else {
-        const error = new Error(res.statusText);
-        error.res = res;
-        throw error;
-        console.log("error" + error)
-    }
-}
+//------- create the loader -------
 const loader = document.getElementById("initial-loader-overlay");
-
+// Assign the classname active and time out
 function showSpinner() {
     loader.className = "active";
     setTimeout(() => {
         loader.className = loader.className.replace("active", "");
     }, 5000);
 }
+//=-------- Loader end-----------------
+
+//----------geocoder results on search -------------------
 function getGeocoderResults() {
 
     geocoder.on('result', function (ev) {
@@ -287,22 +278,24 @@ function getGeocoderResults() {
                             "icon-allow-overlap": true
                         }
                     });
-                    console.log(data[i]);
-                    // create DOM element for the marker
-                    var el = document.createElement('div');
-                    el.id = 'geoMaker';
-                    // create the marker
-                    var MarkerResults = new mapboxgl.Marker()
-                        .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                        .addTo(map);
-// console.log("data[i].coordinates.longitude" + data[i].coordinates.longitude);
-                    // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+                    var popup = new mapboxgl.Popup()
+                    .setHTML('<h3>'+ data[i].alias+'</h3>');
+                  
+         var el = document.createElement('div');
+         el.id = 'marker';
+         // create the marker
+         const myMarker = new mapboxgl.Marker({
+             offset: [0, -25]
+         })
+         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+         .setPopup(popup)
+         .addTo(map);
+             const markerDiv = myMarker.getElement();  
+             markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
+             markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
                 }
             })
-            // .catch(err => {
-            //     console.error("err"+err)
-            // })
-
+         
     });
 }
 // function getUserLocation() {
