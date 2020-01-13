@@ -14,6 +14,7 @@
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
     <style>
+       
 #marker {
             color: red;
             display: block;
@@ -59,11 +60,29 @@
         </div>
     </article>
 </section>
+<div id="mySidebar" class='sidebar'>
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <!-- <div class='heading'>
+          <h1>Our locations</h1>
+        </div> -->
+      <div id='listings' class='listings'></div>
+      </div>
 <div id="main">
+              <button class="openbtn" onclick="openNav()">☰</button> 
     <div class='map_geo' id='map' ></div>
     <div type="text" class="geocoder"required  id="geocoder" placeholder="Address"></div>
     <div id="mylog"></div>
 </div>
+<script>
+function openNav() {
+    document.getElementById("mySidebar").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+  }
+  
+  function closeNav() {
+    document.getElementById("mySidebar").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }</script>
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
 <script type="text/javascript" src="index.js"></script>
 </body>

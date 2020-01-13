@@ -74,6 +74,31 @@ let layer = {
    
 }
 var data;
+if (!('remove' in Element.prototype)) {
+    Element.prototype.remove = function() {
+      if (this.parentNode) {
+          this.parentNode.removeChild(this);
+      }
+    };
+  }
+  function flyToStore(currentFeature) {
+    map.flyTo({
+      center: currentFeature.geometry.coordinates,
+      zoom: 15
+    });
+  }
+  
+  function createPopUp(currentFeature) {
+    var popUps = document.getElementsByClassName('mapboxgl-popup');
+    /** Check if there is already a popup on the map and if so, remove it */
+    if (popUps[0]) popUps[0].remove();
+  
+    var popup = new mapboxgl.Popup({ closeOnClick: false })
+      .setLngLat(currentFeature.geometry.coordinates)
+      .setHTML('<h3>Sweetgreen</h3>' +
+        '<h4>' + currentFeature.properties.address + '</h4>')
+      .addTo(map);
+  }
 //data to onLoad
 map.on('load', function (data) {
     console.log(data)
@@ -82,7 +107,6 @@ map.on('load', function (data) {
         "data": geoJson
     });
     map.addLayer(layer);
-
     loader.removeAttribute('hidden');
     const url = baseUrl + '42.3314,-83.0458';
     fetch(url, {
@@ -93,21 +117,44 @@ map.on('load', function (data) {
     }).then(resp => resp.json())
         // Transform the data into json
         .then((data) => {
-
+           
             loader.setAttribute("hidden", "");
             console.log(data)
             ;
-            geoJson.features.forEach(function(marker) {
-
-             
-                });
+            const geoJson = getGeoJson;
+            var mainContainer = document.getElementById("listings");
             for (let i = 0; i < data.length; i++) {
+                getGeoJson.features.push({
+                                        "type": "Feature",
+                                        "geometry": {
+                                            "type": "Point",
+                                            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+                                        },
+                                        "properties": {
+                                            "id": data[i].id,
+                                            "stationName": data[i].alias,
+                                            "isClosed": data[i].is_closed,
+                                            "imageUrl": data[i].image_url,
+                                            "city": data[i].location.city,
+                                            "postalCode": data[i].location.zip_code,
+                                        },
+                                        "layout": {
+                                            "icon-image": "{icon}-15",
+                                            "icon-allow-overlap": true
+                                        }
+                                    });
+                                  console.log(data[i].id)
+                                  var div = document.createElement("div");
+                                  div.innerHTML = 'Name: ' + data[i].name + '</br> phone:' +''+ data[i].phone + '</br>Address:'+''+ data[i].location.address1,data[i].location.city;
+                                  mainContainer.appendChild(div);
+                                    // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
+                                  
                 // .setText(data[i].name);
               
                 // create the marker
               
                 var popup = new mapboxgl.Popup()
-                .setHTML('<h3>' + data[i].alias + '</h3>');
+                .setHTML('<h3>' + data[i].name + '</h3>');
             
               // create a HTML element for each feature
               var el = document.createElement('div');
@@ -120,92 +167,132 @@ map.on('load', function (data) {
                 .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                 .setPopup(popup)
                 .addTo(map);
-            
-              const markerDiv = myMarker.getElement();  
-            
+             console.log(myMarker)
+              const markerDiv = myMarker.getElement();
+              var mainContainer = document.getElementById("listings");
+            markerDiv.addEventListener('click', function(e){
+                openNav()
+              console.log(e)
+                    var clickedListing = e.features[this.dataPosition];
+                    // flyToStore(clickedListing);
+                    // createPopUp(clickedListing);
+                  
+                    var activeItem = document.getElementsByClassName('active');
+                    if (activeItem[0]) {
+                      activeItem[0].classList.remove('active');
+                    }
+                    this.parentNode.classList.add('active');
+                    var features = map.queryRenderedFeatures(e.point, {
+                        layers: ['places']
+                      });
+                      
+                      /* If yes, then: */
+                      if (features.length) {
+                        var clickedPoint = features[0];
+                        
+                        /* Fly to the point */
+                        flyToStore(clickedPoint);
+                        
+                        /* Close all other popups and display popup for clicked store */
+                        createPopUp(clickedPoint);
+                        
+                        /* Highlight listing in sidebar (and remove highlight for all other listings) */
+                        var activeItem = document.getElementsByClassName('active');
+                        if (activeItem[0]) {
+                          activeItem[0].classList.remove('active');
+                        }
+                        var listing = document.getElementById('listing-' + clickedPoint.properties.id);
+                        listing.classList.add('active');
+                      }
+                
+            })
               markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
               markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
+            //   document.getElementById('listings').innerHTML = JSON.stringify(data[i].length, null, 2);
             };
+            
         }) 
         getGeocoderResults()
-
+        
 })
 
-map.on('click', (e, data, i ) => {
-   console.log(data)
-    hide()
-    console.log(e);
-  // Add spinner function
-    loader.removeAttribute('hidden');
-    // map.flyTo({ center: e.features[0].geometry.coordinates });
-    //base url
-    const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
-    // map.flyTo({ center: e.features[0].geometry.coordinates });
-    //fetch to get api from html
-    fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        redirect: 'follow', // manual, *follow, error
-    })
-        .then(resp => resp.json())
-        // Transform the data into json
+
+
+// map.on('click', (e, data, i ) => {
+//    console.log(data)
+//     hide()
+//     console.log(e);
+//   // Add spinner function
+//     loader.removeAttribute('hidden');
+//     // map.flyTo({ center: e.features[0].geometry.coordinates });
+//     //base url
+//     const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
+//     // map.flyTo({ center: e.features[0].geometry.coordinates });
+//     //fetch to get api from html
+//     fetch(url, {
+//         method: 'GET', // *GET, POST, PUT, DELETE, etc.
+//         mode: 'cors', // no-cors, *cors, same-origin
+//         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+//         redirect: 'follow', // manual, *follow, error
+//     })
+//         .then(resp => resp.json())
+//         // Transform the data into json
         
-        .then((data) => {
-            loader.setAttribute("hidden", "");
-            const geoJson = getGeoJson;
+//         .then((data) => {
+//             loader.setAttribute("hidden", "");
+//             const geoJson = getGeoJson;
             
-            for ( i = 0; i < data.length; i++) {
-                console.log(data.length)
-                getGeoJson.features.push({
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-                    },
-                    "properties": {
-                        "id": data[i].id,
-                        "stationName": data[i].alias,
-                        "isClosed": data[i].is_closed,
-                        "imageUrl": data[i].image_url,
-                        "city": data[i].location.city,
-                        "postalCode": data[i].location.zip_code,
-                    },
-                    "layout": {
-                        "icon-image": "{icon}-15",
-                        "icon-allow-overlap": true
-                    }
-                });
-                var popup = new mapboxgl.Popup()
-                           .setHTML('<h3>'+ data[i].alias+'</h3>');
+//             for ( i = 0; i < data.length; i++) {
+//                 console.log(data.length)
+//                 getGeoJson.features.push({
+//                     "type": "Feature",
+//                     "geometry": {
+//                         "type": "Point",
+//                         "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+//                     },
+//                     "properties": {
+//                         "id": data[i].id,
+//                         "stationName": data[i].alias,
+//                         "isClosed": data[i].is_closed,
+//                         "imageUrl": data[i].image_url,
+//                         "city": data[i].location.city,
+//                         "postalCode": data[i].location.zip_code,
+//                     },
+//                     "layout": {
+//                         "icon-image": "{icon}-15",
+//                         "icon-allow-overlap": true
+//                     }
+//                 });
+//                 var popup = new mapboxgl.Popup()
+//                            .setHTML('<h3>'+ data[i].alias+'</h3>');
                          
-                var el = document.createElement('div');
-                el.id = 'marker';
-                // create the marker
-                const myMarker = new mapboxgl.Marker({
-                    offset: [0, -25]
-                })
-                .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                .setPopup(popup)
-                .addTo(map);
-                    const markerDiv = myMarker.getElement();  
-                    markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
-                    markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
+//                 var el = document.createElement('div');
+//                 el.id = 'marker';
+//                 // create the marker
+//                 const myMarker = new mapboxgl.Marker({
+//                     offset: [0, -25]
+//                 })
+//                 .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+//                 .setPopup(popup)
+//                 .addTo(map);
+//                     const markerDiv = myMarker.getElement();  
+//                     markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
+//                     markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
                    
-                // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
-            }
-        })
+//                 // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
+//             }
+//         })
         
         
-    // create DOM element for the marker
-    var el = document.createElement('div');
-    el.id = 'marker';
-//Add a marker to show where you clicked.
-    // create the marker
-     var MarkerResults = new mapboxgl.Marker(el)
-        .setLngLat(e.lngLat)
-        .addTo(map);     
-});
+//     // create DOM element for the marker
+//     var el = document.createElement('div');
+//     el.id = 'marker';
+// //Add a marker to show where you clicked.
+//     // create the marker
+//      var MarkerResults = new mapboxgl.Marker(el)
+//         .setLngLat(e.lngLat)
+//         .addTo(map);     
+// });
 // var former = console.log;
 // console.log = function(msg){
 //     former(msg);
