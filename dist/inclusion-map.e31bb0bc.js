@@ -269,17 +269,17 @@ map.on('load', function (data) {
           "icon-allow-overlap": true
         }
       });
-      console.log(data[i].id);
-      div = document.createElement("div");
-      div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
-      mainContainer.appendChild(div); // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
+      console.log(data[i].id); // var div = document.createElement("div");
+      // div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+      // mainContainer.appendChild(div);
+      // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
       // .setText(data[i].name);
       // create the marker
 
-      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // create a HTML element for each feature
-
-      el = document.createElement('div');
-      el.id = 'marker'; // make a marker for each feature and add to the map
+      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // // create a HTML element for each feature
+      // var el = document.createElement('div');
+      // el.id = 'marker';
+      // make a marker for each feature and add to the map
 
       var myMarker = new mapboxgl.Marker({
         offset: [0, -25]
@@ -291,40 +291,7 @@ map.on('load', function (data) {
         openNav();
         console.log(e);
         e.stopPropagation();
-        var clickedListing = e.features[this.dataPosition]; // flyToStore(clickedListing);
-        // createPopUp(clickedListing);
-
-        var activeItem = document.getElementsByClassName('active');
-
-        if (activeItem[0]) {
-          activeItem[0].classList.remove('active');
-        }
-
-        this.parentNode.classList.add('active');
-        var features = map.queryRenderedFeatures(e.point, {
-          layers: ['places']
-        });
         /* If yes, then: */
-
-        if (features.length) {
-          var clickedPoint = features[0];
-          /* Fly to the point */
-
-          flyToStore(clickedPoint);
-          /* Close all other popups and display popup for clicked store */
-
-          createPopUp(clickedPoint);
-          /* Highlight listing in sidebar (and remove highlight for all other listings) */
-
-          var activeItem = document.getElementsByClassName('active');
-
-          if (activeItem[0]) {
-            activeItem[0].classList.remove('active');
-          }
-
-          var listing = document.getElementById('listing-' + clickedPoint.properties.id);
-          listing.classList.add('active');
-        }
       });
       markerDiv.addEventListener('mouseenter', function () {
         return myMarker.togglePopup();
@@ -335,9 +302,7 @@ map.on('load', function (data) {
     };
 
     for (var i = 0; i < data.length; i++) {
-      var div;
       var popup;
-      var el;
       var mainContainer;
 
       _loop(i);
@@ -411,29 +376,9 @@ map.on('click', function (e, data, i) {
         openNav();
         e.stopPropagation();
         console.log(e); // flyToStore(clickedListing);
-        // createPopUp(clickedListing);
+        // createPopUp(clickedListing)
 
         /* If yes, then: */
-
-        if (features.length) {
-          var clickedPoint = features[0];
-          /* Fly to the point */
-
-          flyToStore(clickedPoint);
-          /* Close all other popups and display popup for clicked store */
-
-          createPopUp(clickedPoint);
-          /* Highlight listing in sidebar (and remove highlight for all other listings) */
-
-          var activeItem = document.getElementsByClassName('active');
-
-          if (activeItem[0]) {
-            activeItem[0].classList.remove('active');
-          }
-
-          var listing = document.getElementById('listing-' + clickedPoint.properties.id);
-          listing.classList.add('active');
-        }
       });
       markerDiv.addEventListener('mouseenter', function () {
         return myMarker.togglePopup();
@@ -457,17 +402,15 @@ map.on('click', function (e, data, i) {
   // create the marker
 
   var MarkerResults = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
-});
-var former = console.log;
-
-console.log = function (msg) {
-  former(msg);
-  document.getElementById('mylog').append("<div>" + msg + "</div>"); //maintains existing logging via the console.
-}; // window.onerror = function(message, url, linenumber) {
+}); // var former = console.log;
+// console.log = function(msg){
+//     former(msg);
+//     document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
+// }
+// window.onerror = function(message, url, linenumber) {
 //     console.log("JavaScript error: " + message + " on line " +
 //         linenumber + " for " + url);
 // }
-
 
 var getGeoJson = {
   type: "FeatureCollection",
@@ -533,7 +476,7 @@ function getGeocoderResults() {
             "icon-allow-overlap": true
           }
         });
-        popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].alias + '</h3>');
+        popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
         el = document.createElement('div');
         el.id = 'marker'; // create the marker
 
