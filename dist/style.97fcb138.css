@@ -33,6 +33,10 @@ body .sidebar .closebtn {
   font-size: 36px;
   margin-left: 50px;
 }
+body .highlightItem {
+  font-weight: bold;
+  color: orange;
+}
 body .openbtn {
   font-size: 20px;
   cursor: pointer;

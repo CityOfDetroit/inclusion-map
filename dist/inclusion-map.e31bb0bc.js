@@ -157,8 +157,21 @@ var geocoder = new MapboxGeocoder({
 //  geocoderV.appendChild(geocoder.onAdd(map));
 
 map.addControl(geocoder);
-map.addControl(new mapboxgl.NavigationControl()); // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+map.addControl(new mapboxgl.NavigationControl());
+var allsidebarids = []; // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
+
+function highlightItem(id) {
+  var elem = document.getElementById(id);
+  elem.classList.add("highlightItem");
+
+  for (var i = 0; i < allsidebarids.length; i++) {
+    if (allsidebarids[i] !== id) {
+      var elems = document.getElementById(allsidebarids[i]);
+      elems.classList.remove("highlightItem");
+    }
+  }
+}
 
 var geoJson = {
   type: "FeatureCollection",
@@ -224,6 +237,7 @@ function createPopUp(currentFeature) {
 
 map.on('load', function (data) {
   console.log(data);
+  allsidebarids = [];
   map.addSource('places', {
     "type": 'geojson',
     "data": geoJson
@@ -245,7 +259,7 @@ map.on('load', function (data) {
   }) // Transform the data into json
   .then(function (data) {
     loader.setAttribute("hidden", "");
-    console.log(data);
+    console.log("data", data);
     var geoJson = getGeoJson;
     var mainContainer = document.getElementById("listings");
 
@@ -269,29 +283,38 @@ map.on('load', function (data) {
           "icon-allow-overlap": true
         }
       });
-      console.log(data[i].id); // var div = document.createElement("div");
-      // div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
-      // mainContainer.appendChild(div);
-      // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
+      console.log(data[i].id);
+      allsidebarids.push(data[i].id);
+      div = document.createElement("div");
+      div.id = data[i].id;
+      div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
+      mainContainer.appendChild(div); // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
       // .setText(data[i].name);
       // create the marker
 
-      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // // create a HTML element for each feature
-      // var el = document.createElement('div');
-      // el.id = 'marker';
-      // make a marker for each feature and add to the map
+      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // create a HTML element for each feature
+
+      el = document.createElement('div');
+      el.id = 'marker';
+      MarkerElement = document.createElement('h3');
+
+      MarkerElement.onclick = function () {
+        location.href = '#' + data[i].id;
+        highlightItem(data[i].id);
+      }; // make a marker for each feature and add to the map
+
 
       var myMarker = new mapboxgl.Marker({
+        element: MarkerElement,
         offset: [0, -25]
       }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
       console.log(myMarker);
       var markerDiv = myMarker.getElement();
       mainContainer = document.getElementById("listings");
-      markerDiv.addEventListener('click', function (e, data) {
-        openNav();
-        console.log(e);
-        e.stopPropagation();
-        /* If yes, then: */
+      markerDiv.addEventListener('click', function (f, data) {
+        openNav(); //console.log(e)
+
+        f.stopPropagation();
       });
       markerDiv.addEventListener('mouseenter', function () {
         return myMarker.togglePopup();
@@ -302,7 +325,10 @@ map.on('load', function (data) {
     };
 
     for (var i = 0; i < data.length; i++) {
+      var div;
       var popup;
+      var el;
+      var MarkerElement;
       var mainContainer;
 
       _loop(i);
@@ -314,6 +340,7 @@ map.on('load', function (data) {
 });
 map.on('click', function (e, data, i) {
   console.log(data);
+  allsidebarids = [];
   hide();
   console.log(e); // Add spinner function
 
@@ -361,21 +388,30 @@ map.on('click', function (e, data, i) {
           "icon-allow-overlap": true
         }
       });
+      allsidebarids.push(data[i].id);
       div = document.createElement("div");
+      div.id = data[i].id;
       div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
       mainContainer.appendChild(div);
       popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
       el = document.createElement('div');
-      el.id = 'marker'; // create the marker
+      el.id = 'marker';
+      MarkerElement = document.createElement('h3');
+
+      MarkerElement.onclick = function () {
+        location.href = '#' + data[i].id;
+        highlightItem(data[i].id);
+      }; // create the marker
+
 
       var myMarker = new mapboxgl.Marker({
+        element: MarkerElement,
         offset: [0, -25]
       }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
       var markerDiv = myMarker.getElement();
-      markerDiv.addEventListener('click', function (e) {
+      markerDiv.addEventListener('click', function (f) {
         openNav();
-        e.stopPropagation();
-        console.log(e); // flyToStore(clickedListing);
+        f.stopPropagation(); // flyToStore(clickedListing);
         // createPopUp(clickedListing)
 
         /* If yes, then: */
@@ -392,6 +428,7 @@ map.on('click', function (e, data, i) {
       var div;
       var popup;
       var el;
+      var MarkerElement;
 
       _loop2();
     }

@@ -35,17 +35,20 @@ body {
   font-size: 36px;
   margin-left: 50px;
 }
-
+.highlightItem{
+  font-weight: bold;
+  color: orange;
+}
 .openbtn {
   font-size: 20px;
   cursor: pointer;
   background-color: #111;
   color: white;
   padding: 10px 15px;
-  border: none;    
-  position:relative; 
-  top:10px; 
-  left:10px; 
+  border: none;
+  position:relative;
+  top:10px;
+  left:10px;
   z-index:1;
   border-radius: 3px;
 }
@@ -57,7 +60,7 @@ body {
 @media screen and (max-height: 450px) {
   .sidebar {padding-top: 15px;}
   .sidebar a {font-size: 18px;}
-}   
+}
 .listings {
   height: 100%;
   overflow: auto;
@@ -153,19 +156,19 @@ body {
          	}
          }
  #main{
-  
-  
+
+
   #map {
-    position: absolute; top: 0; bottom: 0; width: 100%; 
+    position: absolute; top: 0; bottom: 0; width: 100%;
   }
-  
+
   .pad2 {
     padding: 20px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
- 
+
  }
 
  }
@@ -243,4 +246,3 @@ body {
      @extend .fa-star;
    }
    }
-  
