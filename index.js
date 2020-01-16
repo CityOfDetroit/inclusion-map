@@ -342,6 +342,7 @@ function showSpinner() {
 function getGeocoderResults() {
 
     geocoder.on('result', function (ev) {
+        k = k+m;
         hide();
         loader.removeAttribute('hidden');
 
@@ -361,6 +362,7 @@ function getGeocoderResults() {
             // Transform the data into json
             .then((data) => {
                 loader.setAttribute("hidden", "");
+                var mainContainer = document.getElementById("listings");
                 console.log(data.error)
                 const geoJson = getGeoJson;
                 for (let i = 0; i < data.length; i++) {
@@ -384,22 +386,48 @@ function getGeocoderResults() {
                             "icon-allow-overlap": true
                         }
                     });
-                    var popup = new mapboxgl.Popup()
-                    .setHTML('<h3>'+ data[i].name+'</h3>');
+                    allsidebarids.push(data[i].id);
+                console.log("data id", data[i].id)
+                var div = document.createElement("div");
+                div.id = data[i].id;
+                div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                mainContainer.appendChild(div);
+                var popup = new mapboxgl.Popup()
+                           .setHTML('<h3>'+ data[i].name+'</h3>');
 
-         var el = document.createElement('div');
-         el.id = 'marker';
+                           var el = document.createElement('div');
+                           el.id = 'marker';
+           
+                           var MarkerElement = document.createElement('h3');
+           
+                           MarkerElement.onclick = () => {
+                             console.log("ids" ,allsidebarids[i+k] );
+                             location.href = '#'+allsidebarids[i+k];
+                             highlightItem(allsidebarids[i+k]);
+                           }
          // create the marker
          const myMarker = new mapboxgl.Marker({
-             offset: [0, -25]
-         })
-         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-         .setPopup(popup)
-         .addTo(map);
-             const markerDiv = myMarker.getElement();
-             markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
-             markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
+            element:MarkerElement ,
+              offset: [0, -25]
+          })
+          .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+          .setPopup(popup)
+          .addTo(map);
+              const markerDiv = myMarker.getElement();
+
+          markerDiv.addEventListener('click', function(f){
+              openNav()
+              f.stopPropagation();
+
+              // flyToStore(clickedListing);
+              // createPopUp(clickedListing)
+              /* If yes, then: */
+
+          })
+              markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
+              markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
                 }
+                m = data.length;
             })
 
     });

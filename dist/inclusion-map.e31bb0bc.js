@@ -476,6 +476,7 @@ function showSpinner() {
 
 function getGeocoderResults() {
   geocoder.on('result', function (ev) {
+    k = k + m;
     hide();
     loader.removeAttribute('hidden');
     map.getSource('places').setData(ev.result.geometry);
@@ -498,6 +499,7 @@ function getGeocoderResults() {
     }) // Transform the data into json
     .then(function (data) {
       loader.setAttribute("hidden", "");
+      var mainContainer = document.getElementById("listings");
       console.log(data.error);
       var geoJson = getGeoJson;
 
@@ -522,14 +524,36 @@ function getGeocoderResults() {
             "icon-allow-overlap": true
           }
         });
+        allsidebarids.push(data[i].id);
+        console.log("data id", data[i].id);
+        div = document.createElement("div");
+        div.id = data[i].id;
+        div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
+        mainContainer.appendChild(div);
         popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
         el = document.createElement('div');
-        el.id = 'marker'; // create the marker
+        el.id = 'marker';
+        MarkerElement = document.createElement('h3');
+
+        MarkerElement.onclick = function () {
+          console.log("ids", allsidebarids[i + k]);
+          location.href = '#' + allsidebarids[i + k];
+          highlightItem(allsidebarids[i + k]);
+        }; // create the marker
+
 
         var myMarker = new mapboxgl.Marker({
+          element: MarkerElement,
           offset: [0, -25]
         }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
         var markerDiv = myMarker.getElement();
+        markerDiv.addEventListener('click', function (f) {
+          openNav();
+          f.stopPropagation(); // flyToStore(clickedListing);
+          // createPopUp(clickedListing)
+
+          /* If yes, then: */
+        });
         markerDiv.addEventListener('mouseenter', function () {
           return myMarker.togglePopup();
         });
@@ -539,11 +563,15 @@ function getGeocoderResults() {
       };
 
       for (var i = 0; i < data.length; i++) {
+        var div;
         var popup;
         var el;
+        var MarkerElement;
 
         _loop3(i);
       }
+
+      m = data.length;
     });
   });
 } // function getUserLocation() {
@@ -604,7 +632,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42393" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
