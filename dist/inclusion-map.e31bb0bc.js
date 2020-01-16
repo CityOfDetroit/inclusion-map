@@ -208,6 +208,7 @@ var layer = {
   }
 };
 var data;
+var k = 0;
 
 if (!('remove' in Element.prototype)) {
   Element.prototype.remove = function () {
@@ -299,8 +300,9 @@ map.on('load', function (data) {
       MarkerElement = document.createElement('h3');
 
       MarkerElement.onclick = function () {
-        location.href = '#' + data[i].id;
-        highlightItem(data[i].id);
+        console.log("ids", allsidebarids[i]);
+        location.href = '#' + allsidebarids[i];
+        highlightItem(allsidebarids[i]);
       }; // make a marker for each feature and add to the map
 
 
@@ -324,7 +326,7 @@ map.on('load', function (data) {
       }); //   document.getElementById('listings').innerHTML = JSON.stringify(data[i].length, null, 2);
     };
 
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++, k++) {
       var div;
       var popup;
       var el;
@@ -338,9 +340,10 @@ map.on('load', function (data) {
   });
   getGeocoderResults();
 });
+var m = 0;
 map.on('click', function (e, data, i) {
   console.log(data);
-  allsidebarids = [];
+  k = k + m;
   hide();
   console.log(e); // Add spinner function
 
@@ -367,47 +370,50 @@ map.on('click', function (e, data, i) {
     var geoJson = getGeoJson;
     var mainContainer = document.getElementById("listings");
 
-    var _loop2 = function _loop2() {
+    var _loop2 = function _loop2(_i) {
+      console.log("length", k + " " + allsidebarids.length);
       console.log(data.length);
       getGeoJson.features.push({
         "type": "Feature",
         "geometry": {
           "type": "Point",
-          "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+          "coordinates": [data[_i].coordinates.longitude, data[_i].coordinates.latitude]
         },
         "properties": {
-          "id": data[i].id,
-          "stationName": data[i].alias,
-          "isClosed": data[i].is_closed,
-          "imageUrl": data[i].image_url,
-          "city": data[i].location.city,
-          "postalCode": data[i].location.zip_code
+          "id": data[_i].id,
+          "stationName": data[_i].alias,
+          "isClosed": data[_i].is_closed,
+          "imageUrl": data[_i].image_url,
+          "city": data[_i].location.city,
+          "postalCode": data[_i].location.zip_code
         },
         "layout": {
           "icon-image": "{icon}-15",
           "icon-allow-overlap": true
         }
       });
-      allsidebarids.push(data[i].id);
+      allsidebarids.push(data[_i].id);
+      console.log("data id", data[_i].id);
       div = document.createElement("div");
-      div.id = data[i].id;
-      div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
+      div.id = data[_i].id;
+      div.innerHTML = '<p>Name: </p>' + data[_i].name + '</br><p> phone:</p>' + '' + data[_i].phone + '</br><p>Address:</p>' + '' + data[_i].location.address1, data[_i].location.city;
       mainContainer.appendChild(div);
-      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
+      popup = new mapboxgl.Popup().setHTML('<h3>' + data[_i].name + '</h3>');
       el = document.createElement('div');
       el.id = 'marker';
       MarkerElement = document.createElement('h3');
 
       MarkerElement.onclick = function () {
-        location.href = '#' + data[i].id;
-        highlightItem(data[i].id);
+        console.log("ids", allsidebarids[_i + k]);
+        location.href = '#' + allsidebarids[_i + k];
+        highlightItem(allsidebarids[_i + k]);
       }; // create the marker
 
 
       var myMarker = new mapboxgl.Marker({
         element: MarkerElement,
         offset: [0, -25]
-      }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
+      }).setLngLat([data[_i].coordinates.longitude, data[_i].coordinates.latitude]).setPopup(popup).addTo(map);
       var markerDiv = myMarker.getElement();
       markerDiv.addEventListener('click', function (f) {
         openNav();
@@ -424,14 +430,16 @@ map.on('click', function (e, data, i) {
       }); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
     };
 
-    for (i = 0; i < data.length; i++) {
+    for (var _i = 0; _i < data.length; _i++) {
       var div;
       var popup;
       var el;
       var MarkerElement;
 
-      _loop2();
+      _loop2(_i);
     }
+
+    m = data.length;
   }); // create DOM element for the marker
 
   var el = document.createElement('div');
@@ -595,7 +603,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36339" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

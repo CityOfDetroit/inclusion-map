@@ -1153,7 +1153,7 @@ var global = arguments[3];
 /*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <http://feross.org>
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -3415,7 +3415,8 @@ var Duplex;
 Writable.WritableState = WritableState;
 /*<replacement>*/
 
-var util = Object.create(require('core-util-is'));
+var util = require('core-util-is');
+
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -4068,7 +4069,7 @@ var objectKeys = Object.keys || function (obj) {
 module.exports = Duplex;
 
 /*<replacement>*/
-var util = Object.create(require('core-util-is'));
+var util = require('core-util-is');
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -4522,7 +4523,7 @@ function _isUint8Array(obj) {
 /*</replacement>*/
 
 /*<replacement>*/
-var util = Object.create(require('core-util-is'));
+var util = require('core-util-is');
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -5546,7 +5547,7 @@ module.exports = Transform;
 var Duplex = require('./_stream_duplex');
 
 /*<replacement>*/
-var util = Object.create(require('core-util-is'));
+var util = require('core-util-is');
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -5723,7 +5724,7 @@ module.exports = PassThrough;
 var Transform = require('./_stream_transform');
 
 /*<replacement>*/
-var util = Object.create(require('core-util-is'));
+var util = require('core-util-is');
 util.inherits = require('inherits');
 /*</replacement>*/
 
@@ -10032,7 +10033,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36339" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
