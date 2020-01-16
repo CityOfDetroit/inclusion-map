@@ -263,8 +263,8 @@ if (!('remove' in Element.prototype)) {
 map.on('load', function (data) {
   map.addImage('pulsing-dot', pulsingDot, {
     pixelRatio: 2
-  });
-  console.log(data);
+  }); // console.log(data)
+
   allsidebarids = [];
   map.addSource('places', {
     "type": 'geojson',
@@ -286,8 +286,9 @@ map.on('load', function (data) {
     return resp.json();
   }) // Transform the data into json
   .then(function (data) {
-    loader.setAttribute("hidden", "");
-    console.log("data", data);
+    loader.setAttribute("hidden", ""); // console.log("data", data)
+
+    ;
     var geoJson = getGeoJson;
     var mainContainer = document.getElementById("listings");
 
@@ -306,9 +307,8 @@ map.on('load', function (data) {
           "city": data[i].location.city,
           "postalCode": data[i].location.zip_code
         },
-        "layout": {
-          "icon-image": "{icon}-15",
-          "icon-allow-overlap": true
+        'layout': {
+          'icon-image': 'pulsing-dot'
         }
       }); //   console.log(data[i].id)
 
