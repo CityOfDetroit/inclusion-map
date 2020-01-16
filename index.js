@@ -305,7 +305,7 @@ map.on('click', (e, data, i ) => {
                 // console.log("data id", data[i].id)
                 var div = document.createElement("div");
                 div.id = data[i].id;
-                div.innerHTML = '<p>Name: </p>' + data[i].name + '<p> phone:</p>' +''+ data[i].phone + '<p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                div.innerHTML = '<p> Name:' + data[i].name + '</p><p> phone:' +' '+ data[i].phone + '</p><p>Address:'+' '+ data[i].location.address1+' '+data[i].location.city+'</p>';
                 mainContainer.appendChild(div);
                 var popup = new mapboxgl.Popup()
                            .setHTML('<h3>'+ data[i].name+'</h3>');
@@ -435,7 +435,7 @@ function getGeocoderResults() {
                 // console.log("data id", data[i].id)
                 var div = document.createElement("div");
                 div.id = data[i].id;
-                div.innerHTML = '<p>Name: </p>' + data[i].name + '<p> phone:</p>' +''+ data[i].phone + '<p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                div.innerHTML = '<p> Name:' + data[i].name + '</p><p> phone:' +' '+ data[i].phone + '</p><p>Address:'+' '+ data[i].location.address1+' '+data[i].location.city+'</p>';
                 mainContainer.appendChild(div);
                 var popup = new mapboxgl.Popup()
                            .setHTML('<h3>'+ data[i].name+'</h3>');
