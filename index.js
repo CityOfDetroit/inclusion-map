@@ -52,7 +52,72 @@ function highlightItem(id){
 
   }
 }
-
+var size = 200;
+var pulsingDot = {
+    width: size,
+    height: size,
+    data: new Uint8Array(size * size * 4),
+     
+    // get rendering context for the map canvas when layer is added to the map
+    onAdd: function() {
+    var canvas = document.createElement('canvas');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    this.context = canvas.getContext('2d');
+    },
+     
+    // called once before every frame where the icon will be used
+    render: function() {
+    var duration = 1000;
+    var t = (performance.now() % duration) / duration;
+     
+    var radius = (size / 2) * 0.3;
+    var outerRadius = (size / 2) * 0.7 * t + radius;
+    var context = this.context;
+     
+    // draw outer circle
+    context.clearRect(0, 0, this.width, this.height);
+    context.beginPath();
+    context.arc(
+    this.width / 2,
+    this.height / 2,
+    outerRadius,
+    0,
+    Math.PI * 2
+    );
+    context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+    context.fill();
+     
+    // draw inner circle
+    context.beginPath();
+    context.arc(
+    this.width / 2,
+    this.height / 2,
+    radius,
+    0,
+    Math.PI * 2
+    );
+    context.fillStyle = 'rgba(255, 100, 100, 1)';
+    context.strokeStyle = 'white';
+    context.lineWidth = 2 + 4 * (1 - t);
+    context.fill();
+    context.stroke();
+     
+    // update this image's data with data from the canvas
+    this.data = context.getImageData(
+    0,
+    0,
+    this.width,
+    this.height
+    ).data;
+     
+    // continuously repaint the map, resulting in the smooth animation of the dot
+    map.triggerRepaint();
+     
+    // return `true` to let the map know that the image was updated
+    return true;
+    }
+    };
 const geoJson = {
     type: "FeatureCollection",
     features: [],
@@ -82,7 +147,6 @@ let layer = {
         "circle-radius": 10,
         "circle-color": "#007cbf"
     }
-
 }
 var data;
 var k = 0;
@@ -93,26 +157,10 @@ if (!('remove' in Element.prototype)) {
       }
     };
   }
-  function flyToStore(currentFeature) {
-    map.flyTo({
-      center: currentFeature.geometry.coordinates,
-      zoom: 15
-    });
-  }
-
-  function createPopUp(currentFeature) {
-    var popUps = document.getElementsByClassName('mapboxgl-popup');
-    /** Check if there is already a popup on the map and if so, remove it */
-    if (popUps[0]) popUps[0].remove();
-
-    var popup = new mapboxgl.Popup({ closeOnClick: false })
-      .setLngLat(currentFeature.geometry.coordinates)
-      .setHTML('<h3>Sweetgreen</h3>' +
-        '<h4>' + currentFeature.properties.address + '</h4>')
-      .addTo(map);
-  }
+ 
 //data to onLoad
 map.on('load', function (data) {
+    map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
     console.log(data)
     allsidebarids = []
     map.addSource('places', {
@@ -156,18 +204,17 @@ map.on('load', function (data) {
                                             "icon-allow-overlap": true
                                         }
                                     });
-                                  console.log(data[i].id)
+                                //   console.log(data[i].id)
                                   allsidebarids.push(data[i].id);
                                   var div = document.createElement("div");
                                   div.id = data[i].id;
-                                  div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                                  div.innerHTML = '<p> Name:' + data[i].name + '</p><p> phone:' +' '+ data[i].phone + '</p><p>Address:'+' '+ data[i].location.address1+' '+data[i].location.city+'</p>';
                                   mainContainer.appendChild(div);
                                     // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
 
                 // .setText(data[i].name);
 
                 // create the marker
-
                 var popup = new mapboxgl.Popup()
                 .setHTML('<h3>' + data[i].name + '</h3>');
 
@@ -178,7 +225,7 @@ map.on('load', function (data) {
               var MarkerElement = document.createElement('h3');
 
               MarkerElement.onclick = () => {
-                console.log("ids" ,allsidebarids[i] );
+                // console.log("ids" ,allsidebarids[i] );
                 location.href = '#'+allsidebarids[i];
                 highlightItem(allsidebarids[i]);
               }
@@ -190,7 +237,7 @@ map.on('load', function (data) {
                 .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
                 .setPopup(popup)
                 .addTo(map);
-             console.log(myMarker)
+            //  console.log(myMarker)
               const markerDiv = myMarker.getElement();
               var mainContainer = document.getElementById("listings");
             markerDiv.addEventListener('click', function(f,data){
@@ -210,10 +257,10 @@ map.on('load', function (data) {
 var m = 0;
 map.on('click', (e, data, i ) => {
     closeNav()
-   console.log(data)
+//    console.log(data)
    k = k+m;
     hide()
-    console.log(e);
+    // console.log(e);
   // Add spinner function
     loader.removeAttribute('hidden');
     // map.flyTo({ center: e.features[0].geometry.coordinates });
@@ -235,8 +282,8 @@ map.on('click', (e, data, i ) => {
             const geoJson = getGeoJson;
             var mainContainer = document.getElementById("listings");
             for (let i = 0; i < data.length; i++) {
-              console.log("length" , k + " " + allsidebarids.length)
-                console.log(data.length)
+            //   console.log("length" , k + " " + allsidebarids.length)
+            //     console.log(data.length)
                 getGeoJson.features.push({
                     "type": "Feature",
                     "geometry": {
@@ -251,16 +298,15 @@ map.on('click', (e, data, i ) => {
                         "city": data[i].location.city,
                         "postalCode": data[i].location.zip_code,
                     },
-                    "layout": {
-                        "icon-image": "{icon}-15",
-                        "icon-allow-overlap": true
+                    'layout': {
+                        'icon-image': 'pulsing-dot'
                     }
                 });
                 allsidebarids.push(data[i].id);
-                console.log("data id", data[i].id)
+                // console.log("data id", data[i].id)
                 var div = document.createElement("div");
                 div.id = data[i].id;
-                div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                div.innerHTML = '<p>Name: </p>' + data[i].name + '<p> phone:</p>' +''+ data[i].phone + '<p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
                 mainContainer.appendChild(div);
                 var popup = new mapboxgl.Popup()
                            .setHTML('<h3>'+ data[i].name+'</h3>');
@@ -271,7 +317,7 @@ map.on('click', (e, data, i ) => {
                 var MarkerElement = document.createElement('h3');
 
                 MarkerElement.onclick = () => {
-                  console.log("ids" ,allsidebarids[i+k] );
+                //   console.log("ids" ,allsidebarids[i+k] );
                   location.href = '#'+allsidebarids[i+k];
                   highlightItem(allsidebarids[i+k]);
                 }
@@ -363,7 +409,7 @@ function getGeocoderResults() {
             .then((data) => {
                 loader.setAttribute("hidden", "");
                 var mainContainer = document.getElementById("listings");
-                console.log(data.error)
+                // console.log(data.error)
                 const geoJson = getGeoJson;
                 for (let i = 0; i < data.length; i++) {
                     getGeoJson.features.push({
@@ -387,10 +433,10 @@ function getGeocoderResults() {
                         }
                     });
                     allsidebarids.push(data[i].id);
-                console.log("data id", data[i].id)
+                // console.log("data id", data[i].id)
                 var div = document.createElement("div");
                 div.id = data[i].id;
-                div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                div.innerHTML = '<p>Name: </p>' + data[i].name + '<p> phone:</p>' +''+ data[i].phone + '<p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
                 mainContainer.appendChild(div);
                 var popup = new mapboxgl.Popup()
                            .setHTML('<h3>'+ data[i].name+'</h3>');
@@ -401,7 +447,7 @@ function getGeocoderResults() {
                            var MarkerElement = document.createElement('h3');
            
                            MarkerElement.onclick = () => {
-                             console.log("ids" ,allsidebarids[i+k] );
+                            //  console.log("ids" ,allsidebarids[i+k] );
                              location.href = '#'+allsidebarids[i+k];
                              highlightItem(allsidebarids[i+k]);
                            }
