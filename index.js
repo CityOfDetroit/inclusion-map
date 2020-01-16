@@ -209,6 +209,7 @@ map.on('load', function (data) {
 })
 var m = 0;
 map.on('click', (e, data, i ) => {
+    closeNav()
    console.log(data)
    k = k+m;
     hide()
