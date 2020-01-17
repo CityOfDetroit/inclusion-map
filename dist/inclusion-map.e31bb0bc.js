@@ -193,13 +193,9 @@ function createSidebar_Markers(data) {
         "imageUrl": data[i].image_url,
         "city": data[i].location.city,
         "postalCode": data[i].location.zip_code
-      },
-      "layout": {
-        "icon-image": "{icon}-15",
-        "icon-allow-overlap": true
       }
-    }); // console.log(data[i].id)
-
+    });
+    console.log(data[i].id);
     allsidebarids.push(data[i].id);
     div = document.createElement("div");
     div.id = data[i].id;
@@ -221,7 +217,7 @@ function createSidebar_Markers(data) {
     }; // make a marker for each feature and add to the map
 
 
-    var myMarker = new mapboxgl.Marker({
+    var myMarker = new mapboxgl.Marker(el, {
       element: MarkerElement,
       offset: [0, -25]
     }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); //    console.log(myMarker)
@@ -296,23 +292,6 @@ if (!('remove' in Element.prototype)) {
       this.parentNode.removeChild(this);
     }
   };
-}
-
-function flyToStore(currentFeature) {
-  map.flyTo({
-    center: currentFeature.geometry.coordinates,
-    zoom: 15
-  });
-}
-
-function createPopUp(currentFeature) {
-  var popUps = document.getElementsByClassName('mapboxgl-popup');
-  /** Check if there is already a popup on the map and if so, remove it */
-
-  if (popUps[0]) popUps[0].remove();
-  var popup = new mapboxgl.Popup({
-    closeOnClick: false
-  }).setLngLat(currentFeature.geometry.coordinates).setHTML('<h3>Sweetgreen</h3>' + '<h4>' + currentFeature.properties.address + '</h4>').addTo(map);
 } //data to onLoad
 
 
@@ -343,11 +322,12 @@ map.on('load', function (data) {
 
     createSidebar_Markers(data);
   });
+  getGeocoderResults();
 });
 var m = 0;
 map.on('click', function (e, data, i) {
-  closeNav(); // console.log(data)
-  //k = k+m;
+  closeNav();
+  console.log(data); //k = k+m;
 
   hide(); // console.log(e);
   // Add spinner function
@@ -421,54 +401,15 @@ function getGeocoderResults() {
       return resp.json();
     }) // Transform the data into json
     .then(function (data) {
-      loader.setAttribute("hidden", ""); // console.log(data.error)
+      loader.setAttribute("hidden", "");
+      createSidebar_Markers(data);
+    }); // create DOM element for the marker
 
-      var geoJson = getGeoJson;
+    var el = document.createElement('div');
+    el.id = 'marker'; //Add a marker to show where you clicked.
+    // create the marker
 
-      var _loop2 = function _loop2(i) {
-        getGeoJson.features.push({
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-          },
-          "properties": {
-            "id": data[i].id,
-            "stationName": data[i].alias,
-            "isClosed": data[i].is_closed,
-            "imageUrl": data[i].image_url,
-            "Address1": data[i].location.address1,
-            "city": data[i].location.city,
-            "postalCode": data[i].location.zip_code
-          },
-          "layout": {
-            "icon-image": "{icon}-15",
-            "icon-allow-overlap": true
-          }
-        });
-        popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
-        el = document.createElement('div');
-        el.id = 'marker'; // create the marker
-
-        var myMarker = new mapboxgl.Marker({
-          offset: [0, -25]
-        }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
-        var markerDiv = myMarker.getElement();
-        markerDiv.addEventListener('mouseenter', function () {
-          return myMarker.togglePopup();
-        });
-        markerDiv.addEventListener('mouseleave', function () {
-          return myMarker.togglePopup();
-        });
-      };
-
-      for (var i = 0; i < data.length; i++) {
-        var popup;
-        var el;
-
-        _loop2(i);
-      }
-    });
+    var MarkerResults = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
   });
 } // function getUserLocation() {
 //     // request to allow user position
