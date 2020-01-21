@@ -184,7 +184,10 @@ function highlightItem(id) {
 function createSidebar_Markers(data) {
   allsidebarids = [];
   var geoJson = getGeoJson;
+<<<<<<< HEAD
   getGeoJson.features = [];
+=======
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
   var mainContainer = document.getElementById("listings");
   mainContainer.innerHTML = '';
 
@@ -197,6 +200,7 @@ function createSidebar_Markers(data) {
       },
       "properties": {
         "id": data[i].id,
+<<<<<<< HEAD
         "name": data[i].name,
         "stationName": data[i].alias,
         "isClosed": data[i].is_closed,
@@ -223,23 +227,54 @@ function createSidebar_Markers(data) {
 
     div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
     mainContainer.appendChild(div);
+=======
+        "stationName": data[i].alias,
+        "isClosed": data[i].is_closed,
+        "imageUrl": data[i].image_url,
+        "city": data[i].location.city,
+        "postalCode": data[i].location.zip_code
+      }
+    });
+    console.log(data[i].id);
+    allsidebarids.push(data[i].id);
+    div = document.createElement("div");
+    div.id = data[i].id;
+    div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
+    mainContainer.appendChild(div); // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
+    // .setText(data[i].name);
+    // create the marker
+
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
     popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // create a HTML element for each feature
 
     el = document.createElement('div');
     el.id = 'marker';
     MarkerElement = document.createElement('h3');
+<<<<<<< HEAD
     MarkerElement.id = "marker_" + data[i].id;
 
     MarkerElement.onclick = function () {
       //console.log("ids" ,allsidebarids[i] );
+=======
+
+    MarkerElement.onclick = function () {
+      //   console.log("ids" ,allsidebarids[i] );
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
       location.href = '#' + allsidebarids[i];
       highlightItem(allsidebarids[i]);
     }; // make a marker for each feature and add to the map
 
 
+<<<<<<< HEAD
     var myMarker = new mapboxgl.Marker({
       element: MarkerElement
     }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); //console.log(myMarker)
+=======
+    var myMarker = new mapboxgl.Marker(el, {
+      element: MarkerElement,
+      offset: [0, -25]
+    }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); //    console.log(myMarker)
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 
     var markerDiv = myMarker.getElement();
     mainContainer = document.getElementById("listings");
@@ -249,6 +284,7 @@ function createSidebar_Markers(data) {
       f.stopPropagation();
     });
     markerDiv.addEventListener('mouseenter', function () {
+<<<<<<< HEAD
       var popUps = document.getElementsByClassName('mapboxgl-popup');
       /** Check if there is already a popup on the map and if so, remove it */
 
@@ -258,6 +294,13 @@ function createSidebar_Markers(data) {
     markerDiv.addEventListener('mouseleave', function () {
       return myMarker.togglePopup();
     });
+=======
+      return myMarker.togglePopup();
+    });
+    markerDiv.addEventListener('mouseleave', function () {
+      return myMarker.togglePopup();
+    }); //   document.getElementById('listings').innerHTML = JSON.stringify(data[i].length, null, 2);
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
   };
 
   for (var i = 0; i < data.length; i++) {
@@ -268,7 +311,12 @@ function createSidebar_Markers(data) {
     var mainContainer;
 
     _loop(i);
+<<<<<<< HEAD
   }
+=======
+  } //getGeocoderResults()
+
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 }
 
 var geoJson = {
@@ -313,6 +361,7 @@ if (!('remove' in Element.prototype)) {
       this.parentNode.removeChild(this);
     }
   };
+<<<<<<< HEAD
 }
 
 function flyToStore(currentFeature) {
@@ -330,11 +379,17 @@ function createPopUp(currentFeature) {
   var popup = new mapboxgl.Popup({
     closeOnClick: false
   }).setLngLat(currentFeature.geometry.coordinates).setHTML('<h3>' + currentFeature.properties.name + '</h3>').addTo(map);
+=======
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 } //data to onLoad
 
 
 map.on('load', function (data) {
+<<<<<<< HEAD
   //console.log(data)
+=======
+  // console.log(data)
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
   //allsidebarids = []
   map.addSource('places', {
     "type": 'geojson',
@@ -356,7 +411,11 @@ map.on('load', function (data) {
     return resp.json();
   }) // Transform the data into json
   .then(function (data) {
+<<<<<<< HEAD
     loader.setAttribute("hidden", ""); //console.log("data", data);
+=======
+    loader.setAttribute("hidden", ""); // console.log("data", data);
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 
     createSidebar_Markers(data);
   });
@@ -366,6 +425,7 @@ geocoder.on('clear', function () {
   console.log("clear event ");
 });
 map.on('click', function (e, data, i) {
+<<<<<<< HEAD
   //  console.log(data)
   //k = k+m;
   hide(); // remove geocoder marker
@@ -375,6 +435,13 @@ map.on('click', function (e, data, i) {
   loader.removeAttribute('hidden');
   var popUps = document.getElementsByClassName('mapboxgl-popup');
   /** Check if there is already a popup on the map and if so, remove it */
+=======
+  closeNav();
+  console.log(data); //k = k+m;
+
+  hide(); // console.log(e);
+  // Add spinner function
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 
   if (popUps[0]) popUps[0].remove(); // map.flyTo({ center: e.features[0].geometry.coordinates });
   //base url
@@ -404,7 +471,15 @@ map.on('click', function (e, data, i) {
   // create the marker
 
   var MarkerResults = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
+<<<<<<< HEAD
 }); //------- create the loader -------
+=======
+});
+var getGeoJson = {
+  type: "FeatureCollection",
+  features: []
+}; //------- create the loader -------
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
 
 var loader = document.getElementById("initial-loader-overlay"); // Assign the classname active and time out
 
@@ -419,6 +494,7 @@ function showSpinner() {
 
 function getGeocoderResults() {
   geocoder.on('result', function (ev) {
+    closeNav();
     hide();
     loader.removeAttribute('hidden');
     var popUps = document.getElementsByClassName('mapboxgl-popup');
@@ -426,7 +502,11 @@ function getGeocoderResults() {
 
     if (popUps[0]) popUps[0].remove();
     map.getSource('places').setData(ev.result.geometry);
+<<<<<<< HEAD
     built_address = ev.result.place_name; //console.log("coordinates ", ev.result.geometry.coordinates[0])
+=======
+    built_address = ev.result.place_name; // console.log("coordinates ", ev.result.geometry.coordinates[0])
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
     // Api for data
 
     var url = baseUrl + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
@@ -446,7 +526,17 @@ function getGeocoderResults() {
     .then(function (data) {
       loader.setAttribute("hidden", "");
       createSidebar_Markers(data);
+<<<<<<< HEAD
     });
+=======
+    }); // create DOM element for the marker
+
+    var el = document.createElement('div');
+    el.id = 'marker'; //Add a marker to show where you clicked.
+    // create the marker
+
+    var MarkerResults = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
+>>>>>>> eb1d9e7164184112c3c9840e6d14914570a639c9
   });
 } // function getUserLocation() {
 //     // request to allow user position
@@ -506,7 +596,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60100" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38459" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
