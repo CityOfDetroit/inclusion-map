@@ -37,6 +37,10 @@ body .highlightItem {
   font-weight: bold;
   color: orange;
 }
+body #marker {
+  color: green;
+  background-color: green;
+}
 body .openbtn {
   font-size: 20px;
   cursor: pointer;

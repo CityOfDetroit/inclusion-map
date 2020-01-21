@@ -158,7 +158,15 @@ var geocoder = new MapboxGeocoder({
 
 map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl());
-var allsidebarids = []; // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+var allsidebarids = [];
+var getGeoJson = {
+  type: "FeatureCollection",
+  features: []
+};
+var point = {
+  type: "Point",
+  coordinates: []
+}; // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
 
 function highlightItem(id) {
@@ -173,13 +181,103 @@ function highlightItem(id) {
   }
 }
 
+function createSidebar_Markers(data) {
+  allsidebarids = [];
+  var geoJson = getGeoJson;
+  getGeoJson.features = [];
+  var mainContainer = document.getElementById("listings");
+  mainContainer.innerHTML = '';
+
+  var _loop = function _loop(i) {
+    getGeoJson.features.push({
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+      },
+      "properties": {
+        "id": data[i].id,
+        "name": data[i].name,
+        "stationName": data[i].alias,
+        "isClosed": data[i].is_closed,
+        "imageUrl": data[i].image_url,
+        "address": data[i].location.address1,
+        "city": data[i].location.city,
+        "postalCode": data[i].location.zip_code
+      },
+      "layout": {
+        "icon-image": "{icon}-15",
+        "icon-allow-overlap": true
+      }
+    }); //console.log(data[i].id)
+
+    allsidebarids.push(data[i].id);
+    div = document.createElement("div");
+    div.id = data[i].id;
+
+    div.onclick = function () {
+      flyToStore(getGeoJson.features[i]);
+      createPopUp(getGeoJson.features[i]);
+      highlightItem(allsidebarids[i]);
+    };
+
+    div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
+    mainContainer.appendChild(div);
+    popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // create a HTML element for each feature
+
+    el = document.createElement('div');
+    el.id = 'marker';
+    MarkerElement = document.createElement('h3');
+    MarkerElement.id = "marker_" + data[i].id;
+
+    MarkerElement.onclick = function () {
+      //console.log("ids" ,allsidebarids[i] );
+      location.href = '#' + allsidebarids[i];
+      highlightItem(allsidebarids[i]);
+    }; // make a marker for each feature and add to the map
+
+
+    var myMarker = new mapboxgl.Marker({
+      element: MarkerElement
+    }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map); //console.log(myMarker)
+
+    var markerDiv = myMarker.getElement();
+    mainContainer = document.getElementById("listings");
+    markerDiv.addEventListener('click', function (f, data) {
+      openNav(); //console.log(e)
+
+      f.stopPropagation();
+    });
+    markerDiv.addEventListener('mouseenter', function () {
+      var popUps = document.getElementsByClassName('mapboxgl-popup');
+      /** Check if there is already a popup on the map and if so, remove it */
+
+      if (popUps[0]) popUps[0].remove();
+      myMarker.togglePopup();
+    });
+    markerDiv.addEventListener('mouseleave', function () {
+      return myMarker.togglePopup();
+    });
+  };
+
+  for (var i = 0; i < data.length; i++) {
+    var div;
+    var popup;
+    var el;
+    var MarkerElement;
+    var mainContainer;
+
+    _loop(i);
+  }
+}
+
 var geoJson = {
   type: "FeatureCollection",
   features: []
 };
 
 function hide() {
-  var markers = document.getElementsByClassName("mapboxgl-marker");
+  var markers = document.getElementsByClassName('mapboxgl-marker mapboxgl-marker-anchor-center');
 
   for (var i = 0; i < markers.length; i++) {
     markers[i].style.visibility = "hidden";
@@ -208,7 +306,6 @@ var layer = {
   }
 };
 var data;
-var k = 0;
 
 if (!('remove' in Element.prototype)) {
   Element.prototype.remove = function () {
@@ -232,13 +329,13 @@ function createPopUp(currentFeature) {
   if (popUps[0]) popUps[0].remove();
   var popup = new mapboxgl.Popup({
     closeOnClick: false
-  }).setLngLat(currentFeature.geometry.coordinates).setHTML('<h3>Sweetgreen</h3>' + '<h4>' + currentFeature.properties.address + '</h4>').addTo(map);
+  }).setLngLat(currentFeature.geometry.coordinates).setHTML('<h3>' + currentFeature.properties.name + '</h3>').addTo(map);
 } //data to onLoad
 
 
 map.on('load', function (data) {
-  console.log(data);
-  allsidebarids = [];
+  //console.log(data)
+  //allsidebarids = []
   map.addSource('places', {
     "type": 'geojson',
     "data": geoJson
@@ -259,96 +356,27 @@ map.on('load', function (data) {
     return resp.json();
   }) // Transform the data into json
   .then(function (data) {
-    loader.setAttribute("hidden", "");
-    console.log("data", data);
-    var geoJson = getGeoJson;
-    var mainContainer = document.getElementById("listings");
+    loader.setAttribute("hidden", ""); //console.log("data", data);
 
-    var _loop = function _loop(i) {
-      getGeoJson.features.push({
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-        },
-        "properties": {
-          "id": data[i].id,
-          "stationName": data[i].alias,
-          "isClosed": data[i].is_closed,
-          "imageUrl": data[i].image_url,
-          "city": data[i].location.city,
-          "postalCode": data[i].location.zip_code
-        },
-        "layout": {
-          "icon-image": "{icon}-15",
-          "icon-allow-overlap": true
-        }
-      });
-      console.log(data[i].id);
-      allsidebarids.push(data[i].id);
-      div = document.createElement("div");
-      div.id = data[i].id;
-      div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' + '' + data[i].phone + '</br><p>Address:</p>' + '' + data[i].location.address1, data[i].location.city;
-      mainContainer.appendChild(div); // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
-      // .setText(data[i].name);
-      // create the marker
-
-      popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>'); // create a HTML element for each feature
-
-      el = document.createElement('div');
-      el.id = 'marker';
-      MarkerElement = document.createElement('h3');
-
-      MarkerElement.onclick = function () {
-        console.log("ids", allsidebarids[i]);
-        location.href = '#' + allsidebarids[i];
-        highlightItem(allsidebarids[i]);
-      }; // make a marker for each feature and add to the map
-
-
-      var myMarker = new mapboxgl.Marker({
-        element: MarkerElement,
-        offset: [0, -25]
-      }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
-      console.log(myMarker);
-      var markerDiv = myMarker.getElement();
-      mainContainer = document.getElementById("listings");
-      markerDiv.addEventListener('click', function (f, data) {
-        openNav(); //console.log(e)
-
-        f.stopPropagation();
-      });
-      markerDiv.addEventListener('mouseenter', function () {
-        return myMarker.togglePopup();
-      });
-      markerDiv.addEventListener('mouseleave', function () {
-        return myMarker.togglePopup();
-      }); //   document.getElementById('listings').innerHTML = JSON.stringify(data[i].length, null, 2);
-    };
-
-    for (var i = 0; i < data.length; i++, k++) {
-      var div;
-      var popup;
-      var el;
-      var MarkerElement;
-      var mainContainer;
-
-      _loop(i);
-    }
-
-    ;
+    createSidebar_Markers(data);
   });
   getGeocoderResults();
 });
-var m = 0;
+geocoder.on('clear', function () {
+  console.log("clear event ");
+});
 map.on('click', function (e, data, i) {
-  closeNav();
-  console.log(data);
-  k = k + m;
-  hide();
-  console.log(e); // Add spinner function
+  //  console.log(data)
+  //k = k+m;
+  hide(); // remove geocoder marker
 
-  loader.removeAttribute('hidden'); // map.flyTo({ center: e.features[0].geometry.coordinates });
+  map.getSource('places').setData(point); // Add spinner function
+
+  loader.removeAttribute('hidden');
+  var popUps = document.getElementsByClassName('mapboxgl-popup');
+  /** Check if there is already a popup on the map and if so, remove it */
+
+  if (popUps[0]) popUps[0].remove(); // map.flyTo({ center: e.features[0].geometry.coordinates });
   //base url
 
   var url = baseUrl + [e.lngLat.lat, e.lngLat.lng]; // map.flyTo({ center: e.features[0].geometry.coordinates });
@@ -368,79 +396,7 @@ map.on('click', function (e, data, i) {
   }) // Transform the data into json
   .then(function (data) {
     loader.setAttribute("hidden", "");
-    var geoJson = getGeoJson;
-    var mainContainer = document.getElementById("listings");
-
-    var _loop2 = function _loop2(_i) {
-      console.log("length", k + " " + allsidebarids.length);
-      console.log(data.length);
-      getGeoJson.features.push({
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": [data[_i].coordinates.longitude, data[_i].coordinates.latitude]
-        },
-        "properties": {
-          "id": data[_i].id,
-          "stationName": data[_i].alias,
-          "isClosed": data[_i].is_closed,
-          "imageUrl": data[_i].image_url,
-          "city": data[_i].location.city,
-          "postalCode": data[_i].location.zip_code
-        },
-        "layout": {
-          "icon-image": "{icon}-15",
-          "icon-allow-overlap": true
-        }
-      });
-      allsidebarids.push(data[_i].id);
-      console.log("data id", data[_i].id);
-      div = document.createElement("div");
-      div.id = data[_i].id;
-      div.innerHTML = '<p>Name: </p>' + data[_i].name + '</br><p> phone:</p>' + '' + data[_i].phone + '</br><p>Address:</p>' + '' + data[_i].location.address1, data[_i].location.city;
-      mainContainer.appendChild(div);
-      popup = new mapboxgl.Popup().setHTML('<h3>' + data[_i].name + '</h3>');
-      el = document.createElement('div');
-      el.id = 'marker';
-      MarkerElement = document.createElement('h3');
-
-      MarkerElement.onclick = function () {
-        console.log("ids", allsidebarids[_i + k]);
-        location.href = '#' + allsidebarids[_i + k];
-        highlightItem(allsidebarids[_i + k]);
-      }; // create the marker
-
-
-      var myMarker = new mapboxgl.Marker({
-        element: MarkerElement,
-        offset: [0, -25]
-      }).setLngLat([data[_i].coordinates.longitude, data[_i].coordinates.latitude]).setPopup(popup).addTo(map);
-      var markerDiv = myMarker.getElement();
-      markerDiv.addEventListener('click', function (f) {
-        openNav();
-        f.stopPropagation(); // flyToStore(clickedListing);
-        // createPopUp(clickedListing)
-
-        /* If yes, then: */
-      });
-      markerDiv.addEventListener('mouseenter', function () {
-        return myMarker.togglePopup();
-      });
-      markerDiv.addEventListener('mouseleave', function () {
-        return myMarker.togglePopup();
-      }); // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
-    };
-
-    for (var _i = 0; _i < data.length; _i++) {
-      var div;
-      var popup;
-      var el;
-      var MarkerElement;
-
-      _loop2(_i);
-    }
-
-    m = data.length;
+    createSidebar_Markers(data);
   }); // create DOM element for the marker
 
   var el = document.createElement('div');
@@ -448,20 +404,7 @@ map.on('click', function (e, data, i) {
   // create the marker
 
   var MarkerResults = new mapboxgl.Marker(el).setLngLat(e.lngLat).addTo(map);
-}); // var former = console.log;
-// console.log = function(msg){
-//     former(msg);
-//     document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
-// }
-// window.onerror = function(message, url, linenumber) {
-//     console.log("JavaScript error: " + message + " on line " +
-//         linenumber + " for " + url);
-// }
-
-var getGeoJson = {
-  type: "FeatureCollection",
-  features: []
-}; //------- create the loader -------
+}); //------- create the loader -------
 
 var loader = document.getElementById("initial-loader-overlay"); // Assign the classname active and time out
 
@@ -478,9 +421,13 @@ function getGeocoderResults() {
   geocoder.on('result', function (ev) {
     hide();
     loader.removeAttribute('hidden');
+    var popUps = document.getElementsByClassName('mapboxgl-popup');
+    /** Check if there is already a popup on the map and if so, remove it */
+
+    if (popUps[0]) popUps[0].remove();
     map.getSource('places').setData(ev.result.geometry);
-    built_address = ev.result.place_name;
-    console.log("coordinates ", ev.result.geometry.coordinates[0]); // Api for data
+    built_address = ev.result.place_name; //console.log("coordinates ", ev.result.geometry.coordinates[0])
+    // Api for data
 
     var url = baseUrl + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
     fetch(url, {
@@ -498,52 +445,7 @@ function getGeocoderResults() {
     }) // Transform the data into json
     .then(function (data) {
       loader.setAttribute("hidden", "");
-      console.log(data.error);
-      var geoJson = getGeoJson;
-
-      var _loop3 = function _loop3(i) {
-        getGeoJson.features.push({
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-          },
-          "properties": {
-            "id": data[i].id,
-            "stationName": data[i].alias,
-            "isClosed": data[i].is_closed,
-            "imageUrl": data[i].image_url,
-            "Address1": data[i].location.address1,
-            "city": data[i].location.city,
-            "postalCode": data[i].location.zip_code
-          },
-          "layout": {
-            "icon-image": "{icon}-15",
-            "icon-allow-overlap": true
-          }
-        });
-        popup = new mapboxgl.Popup().setHTML('<h3>' + data[i].name + '</h3>');
-        el = document.createElement('div');
-        el.id = 'marker'; // create the marker
-
-        var myMarker = new mapboxgl.Marker({
-          offset: [0, -25]
-        }).setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude]).setPopup(popup).addTo(map);
-        var markerDiv = myMarker.getElement();
-        markerDiv.addEventListener('mouseenter', function () {
-          return myMarker.togglePopup();
-        });
-        markerDiv.addEventListener('mouseleave', function () {
-          return myMarker.togglePopup();
-        });
-      };
-
-      for (var i = 0; i < data.length; i++) {
-        var popup;
-        var el;
-
-        _loop3(i);
-      }
+      createSidebar_Markers(data);
     });
   });
 } // function getUserLocation() {

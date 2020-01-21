@@ -39,6 +39,15 @@ map.addControl(geocoder);
 map.addControl(new mapboxgl.NavigationControl());
 
 var allsidebarids = [];
+var getGeoJson =  {
+      type: "FeatureCollection",
+      features: [],
+  }
+
+var point = {
+      type: "Point",
+      coordinates: [],
+  }
 // document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 //================ geocoder for address search ends====================//
 function highlightItem(id){
@@ -53,13 +62,92 @@ function highlightItem(id){
   }
 }
 
+function createSidebar_Markers(data){
+  allsidebarids = [];
+  const geoJson = getGeoJson;
+  getGeoJson.features = [];
+  var mainContainer = document.getElementById("listings");
+  mainContainer.innerHTML = '';
+  for (let i = 0; i < data.length; i++) {
+      getGeoJson.features.push({
+                              "type": "Feature",
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
+                              },
+                              "properties": {
+                                  "id": data[i].id,
+                                  "name":data[i].name,
+                                  "stationName": data[i].alias,
+                                  "isClosed": data[i].is_closed,
+                                  "imageUrl": data[i].image_url,
+                                  "address" : data[i].location.address1,
+                                  "city": data[i].location.city,
+                                  "postalCode": data[i].location.zip_code,
+                              },
+                              "layout": {
+                                  "icon-image": "{icon}-15",
+                                  "icon-allow-overlap": true
+                              }
+                          });
+                        //console.log(data[i].id)
+                        allsidebarids.push(data[i].id);
+                        var div = document.createElement("div");
+                        div.id = data[i].id;
+                        div.onclick = () =>{
+                          flyToStore(getGeoJson.features[i]);
+                          createPopUp(getGeoJson.features[i]);
+                          highlightItem(allsidebarids[i]);
+                        }
+
+                        div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
+                        mainContainer.appendChild(div);
+      var popup = new mapboxgl.Popup()
+      .setHTML('<h3>' + data[i].name + '</h3>');
+
+    // create a HTML element for each feature
+    var el = document.createElement('div');
+    el.id = 'marker';
+
+    var MarkerElement = document.createElement('h3');
+    MarkerElement.id = "marker_"+data[i].id;
+    MarkerElement.onclick = () => {
+      //console.log("ids" ,allsidebarids[i] );
+      location.href = '#'+allsidebarids[i];
+      highlightItem(allsidebarids[i]);
+    }
+    // make a marker for each feature and add to the map
+    const myMarker = new mapboxgl.Marker({
+          element :MarkerElement
+      })
+      .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
+      .setPopup(popup)
+      .addTo(map);
+   //console.log(myMarker)
+    const markerDiv = myMarker.getElement();
+    var mainContainer = document.getElementById("listings");
+    markerDiv.addEventListener('click', function(f,data){
+        openNav()
+        //console.log(e)
+        f.stopPropagation();
+    })
+    markerDiv.addEventListener('mouseenter', () => {
+      var popUps = document.getElementsByClassName('mapboxgl-popup');
+      /** Check if there is already a popup on the map and if so, remove it */
+      if (popUps[0]) popUps[0].remove();
+      myMarker.togglePopup()});
+    markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
+  }
+
+}
+
 const geoJson = {
     type: "FeatureCollection",
     features: [],
 };
 
 function hide() {
-    let markers = document.getElementsByClassName("mapboxgl-marker");
+    let markers = document.getElementsByClassName('mapboxgl-marker mapboxgl-marker-anchor-center');
     for (let i = 0; i < markers.length; i++) {
         markers[i].style.visibility = "hidden";
     }
@@ -85,7 +173,6 @@ let layer = {
 
 }
 var data;
-var k = 0;
 if (!('remove' in Element.prototype)) {
     Element.prototype.remove = function() {
       if (this.parentNode) {
@@ -93,7 +180,7 @@ if (!('remove' in Element.prototype)) {
       }
     };
   }
-  function flyToStore(currentFeature) {
+function flyToStore(currentFeature) {
     map.flyTo({
       center: currentFeature.geometry.coordinates,
       zoom: 15
@@ -107,20 +194,21 @@ if (!('remove' in Element.prototype)) {
 
     var popup = new mapboxgl.Popup({ closeOnClick: false })
       .setLngLat(currentFeature.geometry.coordinates)
-      .setHTML('<h3>Sweetgreen</h3>' +
-        '<h4>' + currentFeature.properties.address + '</h4>')
+      .setHTML('<h3>'+currentFeature.properties.name+'</h3>')
       .addTo(map);
+     
   }
 //data to onLoad
 map.on('load', function (data) {
-    console.log(data)
-    allsidebarids = []
+    //console.log(data)
+    //allsidebarids = []
     map.addSource('places', {
         "type": 'geojson',
         "data": geoJson
     });
     map.addLayer(layer);
     loader.removeAttribute('hidden');
+
     const url = baseUrl + '42.3314,-83.0458';
     fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -130,92 +218,31 @@ map.on('load', function (data) {
     }).then(resp => resp.json())
         // Transform the data into json
         .then((data) => {
-
             loader.setAttribute("hidden", "");
-            console.log("data", data)
-            ;
-            const geoJson = getGeoJson;
-            var mainContainer = document.getElementById("listings");
-            for (let i = 0; i < data.length; i++, k++) {
-                getGeoJson.features.push({
-                                        "type": "Feature",
-                                        "geometry": {
-                                            "type": "Point",
-                                            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-                                        },
-                                        "properties": {
-                                            "id": data[i].id,
-                                            "stationName": data[i].alias,
-                                            "isClosed": data[i].is_closed,
-                                            "imageUrl": data[i].image_url,
-                                            "city": data[i].location.city,
-                                            "postalCode": data[i].location.zip_code,
-                                        },
-                                        "layout": {
-                                            "icon-image": "{icon}-15",
-                                            "icon-allow-overlap": true
-                                        }
-                                    });
-                                  console.log(data[i].id)
-                                  allsidebarids.push(data[i].id);
-                                  var div = document.createElement("div");
-                                  div.id = data[i].id;
-                                  div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
-                                  mainContainer.appendChild(div);
-                                    // document.getElementById("listings").innerHTML = 'Name: ' + data[i].id + ' ' + data[i].is_closed;
+            //console.log("data", data);
+            createSidebar_Markers(data);
 
-                // .setText(data[i].name);
+          });
+  getGeocoderResults();
+});
 
-                // create the marker
-
-                var popup = new mapboxgl.Popup()
-                .setHTML('<h3>' + data[i].name + '</h3>');
-
-              // create a HTML element for each feature
-              var el = document.createElement('div');
-              el.id = 'marker';
-
-              var MarkerElement = document.createElement('h3');
-
-              MarkerElement.onclick = () => {
-                console.log("ids" ,allsidebarids[i] );
-                location.href = '#'+allsidebarids[i];
-                highlightItem(allsidebarids[i]);
-              }
-              // make a marker for each feature and add to the map
-              const myMarker = new mapboxgl.Marker({
-                    element :MarkerElement ,
-                    offset: [0, -25]
-                })
-                .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                .setPopup(popup)
-                .addTo(map);
-             console.log(myMarker)
-              const markerDiv = myMarker.getElement();
-              var mainContainer = document.getElementById("listings");
-            markerDiv.addEventListener('click', function(f,data){
-                openNav()
-                //console.log(e)
-                f.stopPropagation();
-            })
-              markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
-              markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
-            //   document.getElementById('listings').innerHTML = JSON.stringify(data[i].length, null, 2);
-            };
-
-        })
-        getGeocoderResults()
-
+geocoder.on('clear', () => {
+  console.log("clear event ")
 })
-var m = 0;
+
 map.on('click', (e, data, i ) => {
-    closeNav()
-   console.log(data)
-   k = k+m;
-    hide()
-    console.log(e);
+  //  console.log(data)
+   //k = k+m;
+    hide();
+
+    // remove geocoder marker
+    map.getSource('places').setData(point);
+
   // Add spinner function
     loader.removeAttribute('hidden');
+    var popUps = document.getElementsByClassName('mapboxgl-popup');
+    /** Check if there is already a popup on the map and if so, remove it */
+    if (popUps[0]) popUps[0].remove();
     // map.flyTo({ center: e.features[0].geometry.coordinates });
     //base url
     const url = baseUrl + [e.lngLat.lat, e.lngLat.lng];
@@ -232,101 +259,21 @@ map.on('click', (e, data, i ) => {
 
         .then((data) => {
             loader.setAttribute("hidden", "");
-            const geoJson = getGeoJson;
-            var mainContainer = document.getElementById("listings");
-            for (let i = 0; i < data.length; i++) {
-              console.log("length" , k + " " + allsidebarids.length)
-                console.log(data.length)
-                getGeoJson.features.push({
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-                    },
-                    "properties": {
-                        "id": data[i].id,
-                        "stationName": data[i].alias,
-                        "isClosed": data[i].is_closed,
-                        "imageUrl": data[i].image_url,
-                        "city": data[i].location.city,
-                        "postalCode": data[i].location.zip_code,
-                    },
-                    "layout": {
-                        "icon-image": "{icon}-15",
-                        "icon-allow-overlap": true
-                    }
-                });
-                allsidebarids.push(data[i].id);
-                console.log("data id", data[i].id)
-                var div = document.createElement("div");
-                div.id = data[i].id;
-                div.innerHTML = '<p>Name: </p>' + data[i].name + '</br><p> phone:</p>' +''+ data[i].phone + '</br><p>Address:</p>'+''+ data[i].location.address1,data[i].location.city;
-                mainContainer.appendChild(div);
-                var popup = new mapboxgl.Popup()
-                           .setHTML('<h3>'+ data[i].name+'</h3>');
-
-                var el = document.createElement('div');
-                el.id = 'marker';
-
-                var MarkerElement = document.createElement('h3');
-
-                MarkerElement.onclick = () => {
-                  console.log("ids" ,allsidebarids[i+k] );
-                  location.href = '#'+allsidebarids[i+k];
-                  highlightItem(allsidebarids[i+k]);
-                }
-                // create the marker
-                const myMarker = new mapboxgl.Marker({
-                  element:MarkerElement ,
-                    offset: [0, -25]
-                })
-                .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-                .setPopup(popup)
-                .addTo(map);
-                    const markerDiv = myMarker.getElement();
-
-                markerDiv.addEventListener('click', function(f){
-                    openNav()
-                    f.stopPropagation();
-
-                    // flyToStore(clickedListing);
-                    // createPopUp(clickedListing)
-                    /* If yes, then: */
-
-                })
-                    markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
-                    markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
-
-                // document.getElementById('geojson').innerHTML = JSON.stringify(geoJSON, null, 2);
-            }
-            m = data.length;
+            createSidebar_Markers(data)
         })
 
 
     // create DOM element for the marker
     var el = document.createElement('div');
     el.id = 'marker';
-//Add a marker to show where you clicked.
+    //Add a marker to show where you clicked.
     // create the marker
      var MarkerResults = new mapboxgl.Marker(el)
         .setLngLat(e.lngLat)
         .addTo(map);
 });
-// var former = console.log;
-// console.log = function(msg){
-//     former(msg);
-//     document.getElementById('mylog').append("<div>" + msg + "</div>");//maintains existing logging via the console.
-// }
 
-// window.onerror = function(message, url, linenumber) {
-//     console.log("JavaScript error: " + message + " on line " +
-//         linenumber + " for " + url);
-// }
 
-let getGeoJson = {
-    type: "FeatureCollection",
-    features: [],
-}
 //------- create the loader -------
 const loader = document.getElementById("initial-loader-overlay");
 // Assign the classname active and time out
@@ -340,14 +287,18 @@ function showSpinner() {
 
 //----------geocoder results on search -------------------
 function getGeocoderResults() {
-
     geocoder.on('result', function (ev) {
         hide();
-        loader.removeAttribute('hidden');
 
+        loader.removeAttribute('hidden');
+        var popUps = document.getElementsByClassName('mapboxgl-popup');
+        /** Check if there is already a popup on the map and if so, remove it */
+        if (popUps[0]) popUps[0].remove();
+        
         map.getSource('places').setData(ev.result.geometry);
+        
         built_address = ev.result.place_name
-        console.log("coordinates ", ev.result.geometry.coordinates[0])
+        //console.log("coordinates ", ev.result.geometry.coordinates[0])
         // Api for data
         const url = baseUrl + [ev.result.geometry.coordinates[1], ev.result.geometry.coordinates[0]];
         fetch(url, {
@@ -361,45 +312,7 @@ function getGeocoderResults() {
             // Transform the data into json
             .then((data) => {
                 loader.setAttribute("hidden", "");
-                console.log(data.error)
-                const geoJson = getGeoJson;
-                for (let i = 0; i < data.length; i++) {
-                    getGeoJson.features.push({
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [data[i].coordinates.longitude, data[i].coordinates.latitude]
-                        },
-                        "properties": {
-                            "id": data[i].id,
-                            "stationName": data[i].alias,
-                            "isClosed": data[i].is_closed,
-                            "imageUrl": data[i].image_url,
-                            "Address1": data[i].location.address1,
-                            "city": data[i].location.city,
-                            "postalCode": data[i].location.zip_code,
-                        },
-                        "layout": {
-                            "icon-image": "{icon}-15",
-                            "icon-allow-overlap": true
-                        }
-                    });
-                    var popup = new mapboxgl.Popup()
-                    .setHTML('<h3>'+ data[i].name+'</h3>');
-
-         var el = document.createElement('div');
-         el.id = 'marker';
-         // create the marker
-         const myMarker = new mapboxgl.Marker({
-             offset: [0, -25]
-         })
-         .setLngLat([data[i].coordinates.longitude, data[i].coordinates.latitude])
-         .setPopup(popup)
-         .addTo(map);
-             const markerDiv = myMarker.getElement();
-             markerDiv.addEventListener('mouseenter', () => myMarker.togglePopup());
-             markerDiv.addEventListener('mouseleave', () => myMarker.togglePopup());
-                }
+                createSidebar_Markers(data)
             })
 
     });
