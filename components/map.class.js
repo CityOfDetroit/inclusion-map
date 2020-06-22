@@ -8,6 +8,7 @@ export default class Map {
       this.geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         bbox: [-83.3437,42.2102,-82.8754,42.5197],
+        marker: false,
         placeholder: "Enter your address",
         flyTo: false,
       });
@@ -39,7 +40,7 @@ export default class Map {
     };
     this.map.on('load',()=>{
       if(init.geocoder)
-        document.getElementById('geocoder').appendChild(this.geocoder.onAdd(this.map))
+        document.getElementById('geocoder').appendChild(this.geocoder.onAdd(this.map));
       if(init.zoomControls)
         this.map.addControl(new mapboxgl.NavigationControl());
     });
@@ -156,5 +157,6 @@ export default class Map {
   }
   static geocoderResultsFunction(point){
     // console.log(point);
+
   }
 }

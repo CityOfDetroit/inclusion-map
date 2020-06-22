@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Inclusion Map | City of Detroit</title>
+  <title>Wi-Fi Map | City of Detroit</title>
   <meta name="description" content="Application to Help Detroiters find free Wi-Fi locations.">
   <meta name="author" content="Edgar Montes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -13,8 +13,8 @@
       <article class="user-type-container">
         <div class="">
           <article class="user-type">
-            <h4>Welcome to the City of Detroit Census Map</h4>
-            <p>The map will help you understand the complexity of the census.</p>
+            <h4>Welcome to the City of Detroit Wi-Fi Map</h4>
+            <p>The map will help you find free Wi-Fi location across the city.</p>
             <article class="user-type-btns">
               <button type="button" name="button" data-btn-type="v-sign-up">START</button>
             </article>
@@ -60,69 +60,8 @@
         <section class="filters">
           <button id="close-filters-btn" class="close-btn"><i class="fas fa-angle-left"></i> Back</button>
           <h5>Filter Census Information</h5>
-          <article>
-            <button id="hardest-filter-btn" class="filter-btn">x</button>
-            <label for="hardest">By Hardest to Count:</label>
-            <select id="hardest" class="interactive-filters">
-              <option value="null" selected=""></option>
-              <option value="73-100">> 73 - 100</option>
-              <option value="70-73">> 70 - 73</option>
-              <option value="65-70">> 65 - 70</option>
-              <option value="60-65">> 60 - 65</option>
-              <option value="20-60">20 - 60</option>
-            </select>
-          </article>
-          <article>
-            <button id="low-response-filter-btn" class="filter-btn">x</button>
-            <label for="low-response">By Non-response Score:</label>
-            <select id="low-response" class="interactive-filters">
-              <option value="null" selected=""></option>
-              <option value="28+">Greater than 28%</option>
-              <option value="28-">Less than 28%</option>
-            </select>
-          </article>
-          <article>
-              <button id="population-filter-btn" class="filter-btn">x</button>
-              <label for="population">By Population:</label>
-              <select id="population" class="interactive-filters">
-                <option value="null" selected=""></option>
-                <option value="1500">Over 1,500</option>
-                <option value="2000">Over 2,000</option>
-              </select>
-            </article>
-          <article>
-            <button id="no-internet-filter-btn" class="filter-btn">x</button>
-            <label for="no-internet">By % of Homes without Internet:</label>
-            <select id="no-internet" class="interactive-filters">
-              <option value="null" selected=""></option>
-              <option value="86+">> 86</option>
-              <option value="60-86">>60 - 86</option>
-              <option value="40-60">>40 - 60</option>
-              <option value="20-40">>20 - 40</option>
-              <option value="0-20">0 - 20</option>
-            </select>
-          </article>
         </section>
         <button id="filters"><i class="fas fa-filter"></i> Filters</button>
-        <section id="legend">
-          <p><strong>Response Rate %</strong></p>
-          <article class="legend-colors">
-            <div class="legend-item rate-low"></div>
-            <div class="legend-item rate-20"></div>
-            <div class="legend-item rate-30"></div>
-            <div class="legend-item rate-40"></div>
-            <div class="legend-item rate-50"></div>
-            <div class="legend-item rate-60"></div>
-          </article>
-          <article class="legend-labels">
-            <div class="legend-item">0-20</div>
-            <div class="legend-item">20s</div>
-            <div class="legend-item">30s</div>
-            <div class="legend-item">40s</div>
-            <div class="legend-item">50s</div>
-            <div class="legend-item">60-100</div>
-          </article>
-        </section>
       </section>
     </section>
   </section>

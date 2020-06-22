@@ -37,6 +37,11 @@ import './sass/styles.scss';
       controller.initialForm(ev.target.attributes[2].nodeValue, controller);
     });
   });
+
+  controller.map.geocoder.on('result', function (ev, parent = this) {
+    controller.geoResults(ev,controller);
+  });
+
   window.addEventListener('resize',()=>{
     if (!throttled) {
       // actual callback action

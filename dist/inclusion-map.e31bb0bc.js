@@ -30722,6 +30722,7 @@ class Map {
       this.geocoder = new MapboxGeocoder({
         accessToken: _mapboxGl.default.accessToken,
         bbox: [-83.3437, 42.2102, -82.8754, 42.5197],
+        marker: false,
         placeholder: "Enter your address",
         flyTo: false
       });
@@ -30991,7 +30992,7 @@ class Controller {
     this.map = new _mapClass.default({
       styleURL: 'mapbox://styles/mapbox',
       mapContainer: 'map',
-      geocoder: false,
+      geocoder: true,
       zoomControls: true,
       baseLayers: {
         street: 'light-v10',
@@ -31073,6 +31074,7 @@ class Controller {
   }
 
   getWiFiPoints(_controller, centroid) {
+    document.querySelector('#initial-loader-overlay').className = 'active';
     let baseUrl = "https://apis.detroitmi.gov/crowdsource/yahoo/wifi/locations/";
     const url = `${baseUrl}${centroid[0]},${centroid[1]}`;
     fetch(url, {
@@ -31113,6 +31115,8 @@ class Controller {
       _controller.wifiLocs = tempWiFiList.features;
 
       _controller.map.map.getSource('wifi').setData(tempWiFiList);
+
+      document.querySelector('#initial-loader-overlay').className = '';
     });
   }
 
@@ -31125,6 +31129,8 @@ class Controller {
 
     _controller.map.map.getSource('single-point').setData(ev.result.geometry);
 
+    _controller.getWiFiPoints(_controller, [ev.result.center[1], ev.result.center[0]]);
+
     _controller.map.map.flyTo({
       center: ev.result.center,
       zoom: 12,
@@ -31135,24 +31141,6 @@ class Controller {
         return t;
       }
 
-    });
-
-    const url = `http://gis.detroitmi.gov/arcgis/rest/services/DoIT/LITCH/MapServer/0/query?where=&text=&objectIds=&time=&geometry=${ev.result.center[0]}%2C+${ev.result.center[1]}&geometryType=esriGeometryPoint&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=fid%2C+name&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=json`;
-    fetch(url).then(resp => resp.json()).then(function (data) {
-      //console.log(data);
-      if (data.features.length) {
-        const patrol = data.features[0].properties.name.split(' ').join('+');
-        document.getElementById('sheet-link').href = `https://app.smartsheet.com/b/form/f004f42fcd4345b89a35049a29ff408a?Patrol+ID=${data.features[0].properties.FID}&Patrol+Name=${patrol}`;
-        document.querySelector('.patrol-info').innerHTML = `<h3>Radio Patrol ${data.features[0].properties.name}</h3><p>Interested in becoming part of your local radio patrol? Follow the link to start the process.</p><p><small>The Radio Patrol application process is managed by the Detroit Police Department. Once you complete the sign up, someone will contact you regarding the application process. Residents who complete the online form will be contacted after October 31 to start the application process.</small></p>`;
-        document.querySelector('.data-panel').className = 'data-panel active';
-        _controller.geocoderOff = true;
-      } else {
-        const patrol = 'NEED+NAME';
-        document.getElementById('sheet-link').href = `https://app.smartsheet.com/b/form/0c25bae787bc40ef9707c95b2d9684e8`;
-        document.querySelector('.patrol-info').innerHTML = `<h3>NO RADIO PATROL FOUND</h3><p>Interested starting your new local radio patrlo? Follow the link to start the process.</p><p><small>The Radio Patrol application process is managed by the Detroit Police Department. Once you complete the sign up, someone will contact you regarding the application process. Residents who complete the online form will be contacted after October 31 to start the application process.</small></p>`;
-        document.querySelector('.data-panel').className = 'data-panel active';
-        _controller.geocoderOff = true;
-      }
     });
   }
 
@@ -31286,6 +31274,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     btn.addEventListener('click', function (ev) {
       controller.initialForm(ev.target.attributes[2].nodeValue, controller);
     });
+  });
+  controller.map.geocoder.on('result', function (ev, parent = this) {
+    controller.geoResults(ev, controller);
   });
   window.addEventListener('resize', () => {
     if (!throttled) {
@@ -31636,7 +31627,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64712" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53904" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
