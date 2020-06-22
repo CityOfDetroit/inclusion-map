@@ -4,7 +4,9 @@
   "description": "Free wifi areas within Detroit.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html --https --no-cache -p 3000",
+    "test": "./node_modules/.bin/cypress open",
+    "build": "parcel build src/index.js --no-cache --public-url '.' -d build"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,17 @@
   },
   "homepage": "https://github.com/CityOfDetroit/inclusion-map#readme",
   "devDependencies": {
-    "sass": "^1.22.12"
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "babel-preset-env": "^1.7.0",
+    "cssnano": "^4.1.10",
+    "sass": "^1.26.5"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^4.5.1",
+    "mapbox-gl": "^1.11.0",
     "yelp-fusion": "^3.0.0"
   }
 }

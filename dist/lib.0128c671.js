@@ -117,7 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js":[function(require,module,exports) {
+})({"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js":[function(require,module,exports) {
 var global = arguments[3];
 exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
 
@@ -193,7 +193,7 @@ function isFunction (value) {
 
 xhr = null // Help gc
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js":[function(require,module,exports) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -222,7 +222,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js":[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
@@ -431,7 +431,7 @@ process.chdir = function (dir) {
 process.umask = function () {
   return 0;
 };
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js":[function(require,module,exports) {
 var process = require("process");
 'use strict';
 
@@ -479,14 +479,14 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 
-},{"process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/isarray/index.js":[function(require,module,exports) {
+},{"process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/isarray/index.js":[function(require,module,exports) {
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/events/events.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/events/events.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -548,6 +548,13 @@ EventEmitter.prototype._maxListeners = undefined; // By default EventEmitters wi
 // added to it. This is a useful default which helps finding memory leaks.
 
 var defaultMaxListeners = 10;
+
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+}
+
 Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
   enumerable: true,
   get: function () {
@@ -582,13 +589,13 @@ EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
   return this;
 };
 
-function $getMaxListeners(that) {
+function _getMaxListeners(that) {
   if (that._maxListeners === undefined) return EventEmitter.defaultMaxListeners;
   return that._maxListeners;
 }
 
 EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-  return $getMaxListeners(this);
+  return _getMaxListeners(this);
 };
 
 EventEmitter.prototype.emit = function emit(type) {
@@ -635,11 +642,7 @@ function _addListener(target, type, listener, prepend) {
   var m;
   var events;
   var existing;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   events = target._events;
 
   if (events === undefined) {
@@ -673,7 +676,7 @@ function _addListener(target, type, listener, prepend) {
     } // Check for listener leak
 
 
-    m = $getMaxListeners(target);
+    m = _getMaxListeners(target);
 
     if (m > 0 && existing.length > m && !existing.warned) {
       existing.warned = true; // No error code for this since it is a Warning
@@ -702,14 +705,11 @@ EventEmitter.prototype.prependListener = function prependListener(type, listener
 };
 
 function onceWrapper() {
-  var args = [];
-
-  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
-
   if (!this.fired) {
     this.target.removeListener(this.type, this.wrapFn);
     this.fired = true;
-    ReflectApply(this.listener, this.target, args);
+    if (arguments.length === 0) return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
   }
 }
 
@@ -728,19 +728,13 @@ function _onceWrap(target, type, listener) {
 }
 
 EventEmitter.prototype.once = function once(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   this.on(type, _onceWrap(this, type, listener));
   return this;
 };
 
 EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   this.prependListener(type, _onceWrap(this, type, listener));
   return this;
 }; // Emits a 'removeListener' event if and only if the listener was removed.
@@ -748,11 +742,7 @@ EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, 
 
 EventEmitter.prototype.removeListener = function removeListener(type, listener) {
   var list, events, position, i, originalListener;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
+  checkListener(listener);
   events = this._events;
   if (events === undefined) return this;
   list = events[type];
@@ -904,10 +894,10 @@ function unwrapListeners(arr) {
 
   return ret;
 }
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js":[function(require,module,exports) {
 module.exports = require('events').EventEmitter;
 
-},{"events":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/events/events.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/base64-js/index.js":[function(require,module,exports) {
+},{"events":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/events/events.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/base64-js/index.js":[function(require,module,exports) {
 'use strict'
 
 exports.byteLength = byteLength
@@ -1061,7 +1051,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/ieee754/index.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/ieee754/index.js":[function(require,module,exports) {
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -1147,7 +1137,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js":[function(require,module,exports) {
 
 var global = arguments[3];
 /*!
@@ -2940,7 +2930,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/base64-js/index.js","ieee754":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/ieee754/index.js","isarray":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/isarray/index.js","buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/safe-buffer/index.js":[function(require,module,exports) {
+},{"base64-js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/base64-js/index.js","ieee754":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/ieee754/index.js","isarray":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/isarray/index.js","buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/safe-buffer/index.js":[function(require,module,exports) {
 
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -3005,7 +2995,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js":[function(require,module,exports) {
+},{"buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js":[function(require,module,exports) {
 var Buffer = require("buffer").Buffer;
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3115,9 +3105,9 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-},{"buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/_empty.js":[function(require,module,exports) {
+},{"buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/_empty.js":[function(require,module,exports) {
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/BufferList.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/BufferList.js":[function(require,module,exports) {
 
 'use strict';
 
@@ -3198,7 +3188,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","util":"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/_empty.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports) {
+},{"safe-buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","util":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/_empty.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js":[function(require,module,exports) {
 'use strict';
 
 /*<replacement>*/
@@ -3273,7 +3263,7 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/util-deprecate/browser.js":[function(require,module,exports) {
+},{"process-nextick-args":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/util-deprecate/browser.js":[function(require,module,exports) {
 var global = arguments[3];
 
 /**
@@ -3343,7 +3333,7 @@ function config (name) {
   return String(val).toLowerCase() === 'true';
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js":[function(require,module,exports) {
 var process = require("process");
 
 var global = arguments[3];
@@ -4022,7 +4012,7 @@ Writable.prototype._destroy = function (err, cb) {
   this.end();
   cb(err);
 };
-},{"process-nextick-args":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","core-util-is":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","util-deprecate":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/util-deprecate/browser.js","./internal/streams/stream":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js","safe-buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","./internal/streams/destroy":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js","./_stream_duplex":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports) {
+},{"process-nextick-args":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","core-util-is":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","util-deprecate":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/util-deprecate/browser.js","./internal/streams/stream":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js","safe-buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","./internal/streams/destroy":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js","./_stream_duplex":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4154,7 +4144,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"process-nextick-args":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","core-util-is":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","./_stream_readable":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports) {
+},{"process-nextick-args":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","core-util-is":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","./_stream_readable":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js","./_stream_writable":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/string_decoder/lib/string_decoder.js":[function(require,module,exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -4452,7 +4442,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/safe-buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports) {
+},{"safe-buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/safe-buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js":[function(require,module,exports) {
 
 var global = arguments[3];
 var process = require("process");
@@ -5475,7 +5465,7 @@ function indexOf(xs, x) {
   }
   return -1;
 }
-},{"process-nextick-args":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","isarray":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/isarray/index.js","events":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/events/events.js","./internal/streams/stream":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js","safe-buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","core-util-is":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","util":"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/_empty.js","./internal/streams/BufferList":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/BufferList.js","./internal/streams/destroy":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js","./_stream_duplex":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","string_decoder/":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/string_decoder/lib/string_decoder.js","process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports) {
+},{"process-nextick-args":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process-nextick-args/index.js","isarray":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/isarray/index.js","events":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/events/events.js","./internal/streams/stream":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/stream-browser.js","safe-buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/safe-buffer/index.js","core-util-is":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","util":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/_empty.js","./internal/streams/BufferList":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/BufferList.js","./internal/streams/destroy":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/internal/streams/destroy.js","./_stream_duplex":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","string_decoder/":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/string_decoder/lib/string_decoder.js","process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5690,7 +5680,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports) {
+},{"./_stream_duplex":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","core-util-is":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_passthrough.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5738,7 +5728,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js":[function(require,module,exports) {
+},{"./_stream_transform":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js","core-util-is":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/core-util-is/lib/util.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js":[function(require,module,exports) {
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -5747,7 +5737,7 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_readable.js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_writable.js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js","./lib/_stream_duplex.js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_transform.js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_passthrough.js":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_passthrough.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js":[function(require,module,exports) {
+},{"./lib/_stream_readable.js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_readable.js","./lib/_stream_writable.js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_writable.js","./lib/_stream_duplex.js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_duplex.js","./lib/_stream_transform.js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_transform.js","./lib/_stream_passthrough.js":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/lib/_stream_passthrough.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js":[function(require,module,exports) {
 var process = require("process");
 var Buffer = require("buffer").Buffer;
 var global = arguments[3];
@@ -5976,7 +5966,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 	}
 }
 
-},{"./capability":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","readable-stream":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js","process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js","buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/to-arraybuffer/index.js":[function(require,module,exports) {
+},{"./capability":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","readable-stream":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js","process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js","buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/to-arraybuffer/index.js":[function(require,module,exports) {
 
 var Buffer = require('buffer').Buffer
 
@@ -6006,7 +5996,7 @@ module.exports = function (buf) {
 	}
 }
 
-},{"buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/request.js":[function(require,module,exports) {
+},{"buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/request.js":[function(require,module,exports) {
 var Buffer = require("buffer").Buffer;
 var global = arguments[3];
 var process = require("process");
@@ -6338,7 +6328,7 @@ var unsafeHeaders = [
 	'via'
 ]
 
-},{"./capability":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","./response":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js","readable-stream":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js","to-arraybuffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/to-arraybuffer/index.js","buffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/buffer/index.js","process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/xtend/immutable.js":[function(require,module,exports) {
+},{"./capability":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/capability.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/inherits/inherits_browser.js","./response":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js","readable-stream":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/readable-stream/readable-browser.js","to-arraybuffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/to-arraybuffer/index.js","buffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/buffer/index.js","process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/xtend/immutable.js":[function(require,module,exports) {
 module.exports = extend;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -6357,7 +6347,7 @@ function extend() {
 
   return target;
 }
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/builtin-status-codes/browser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/builtin-status-codes/browser.js":[function(require,module,exports) {
 module.exports = {
   "100": "Continue",
   "101": "Switching Protocols",
@@ -6423,7 +6413,7 @@ module.exports = {
   "511": "Network Authentication Required"
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/node-libs-browser/node_modules/punycode/punycode.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/node-libs-browser/node_modules/punycode/punycode.js":[function(require,module,exports) {
 var global = arguments[3];
 var define;
 /*! https://mths.be/punycode v1.4.1 by @mathias */
@@ -6960,7 +6950,7 @@ var define;
 
 }(this));
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/util.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/util.js":[function(require,module,exports) {
 'use strict';
 
 module.exports = {
@@ -6978,7 +6968,7 @@ module.exports = {
   }
 };
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/decode.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/decode.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7064,7 +7054,7 @@ module.exports = function (qs, sep, eq, options) {
 var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/encode.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/encode.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7153,12 +7143,12 @@ var objectKeys = Object.keys || function (obj) {
 
   return res;
 };
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/index.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/index.js":[function(require,module,exports) {
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
-},{"./decode":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/decode.js","./encode":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/encode.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js":[function(require,module,exports) {
+},{"./decode":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/decode.js","./encode":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/encode.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js":[function(require,module,exports) {
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7892,7 +7882,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"punycode":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/node-libs-browser/node_modules/punycode/punycode.js","./util":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/util.js","querystring":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/index.js":[function(require,module,exports) {
+},{"punycode":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/node-libs-browser/node_modules/punycode/punycode.js","./util":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/util.js","querystring":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/index.js":[function(require,module,exports) {
 var global = arguments[3];
 var ClientRequest = require('./lib/request')
 var response = require('./lib/response')
@@ -7979,7 +7969,7 @@ http.METHODS = [
 	'UNLOCK',
 	'UNSUBSCRIBE'
 ]
-},{"./lib/request":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/request.js","./lib/response":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js","xtend":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/xtend/immutable.js","builtin-status-codes":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/builtin-status-codes/browser.js","url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/https-browserify/index.js":[function(require,module,exports) {
+},{"./lib/request":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/request.js","./lib/response":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/lib/response.js","xtend":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/xtend/immutable.js","builtin-status-codes":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/builtin-status-codes/browser.js","url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/https-browserify/index.js":[function(require,module,exports) {
 var http = require('http')
 var url = require('url')
 
@@ -8012,7 +8002,7 @@ function validateParams (params) {
   return params
 }
 
-},{"http":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/index.js","url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/error/node_modules/string-template/index.js":[function(require,module,exports) {
+},{"http":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/index.js","url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/error/node_modules/string-template/index.js":[function(require,module,exports) {
 var nargs = /\{([0-9a-zA-Z]+)\}/g
 var slice = Array.prototype.slice
 
@@ -8048,7 +8038,7 @@ function template(string) {
     })
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/object-assign/index.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/object-assign/index.js":[function(require,module,exports) {
 /*
 object-assign
 (c) Sindre Sorhus
@@ -8144,14 +8134,14 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
   return to;
 };
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports) {
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/inherits/inherits_browser.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/inherits/inherits_browser.js":[function(require,module,exports) {
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -8176,7 +8166,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/util/util.js":[function(require,module,exports) {
+},{}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/util/util.js":[function(require,module,exports) {
 var global = arguments[3];
 var process = require("process");
 // Copyright Joyent, Inc. and other Node contributors.
@@ -8768,7 +8758,7 @@ exports._extend = function (origin, add) {
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
-},{"./support/isBuffer":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/util/support/isBufferBrowser.js","inherits":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/inherits/inherits_browser.js","process":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/process/browser.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/assert.js":[function(require,module,exports) {
+},{"./support/isBuffer":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/util/support/isBufferBrowser.js","inherits":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/inherits/inherits_browser.js","process":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/process/browser.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/assert.js":[function(require,module,exports) {
 var global = arguments[3];
 'use strict';
 
@@ -9277,7 +9267,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"object-assign":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/object-assign/index.js","util/":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/node_modules/util/util.js"}],"node_modules/error/typed.js":[function(require,module,exports) {
+},{"object-assign":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/object-assign/index.js","util/":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/node_modules/util/util.js"}],"node_modules/error/typed.js":[function(require,module,exports) {
 'use strict';
 
 var template = require('string-template');
@@ -9365,7 +9355,7 @@ function has(obj, key) {
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
-},{"string-template":"node_modules/error/node_modules/string-template/index.js","assert":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/assert/assert.js"}],"node_modules/request-function/index.js":[function(require,module,exports) {
+},{"string-template":"node_modules/error/node_modules/string-template/index.js","assert":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/assert/assert.js"}],"node_modules/request-function/index.js":[function(require,module,exports) {
 'use strict';
 const http = require('http');
 const https = require('https');
@@ -9402,7 +9392,7 @@ module.exports = {
   fromUrl: fromUrl,
   unknownProtocolErrorType: unknownProtocolErrorType
 };
-},{"http":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/stream-http/index.js","https":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/https-browserify/index.js","url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js","error/typed":"node_modules/error/typed.js"}],"node_modules/small-request/lib/to-request-options.js":[function(require,module,exports) {
+},{"http":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/stream-http/index.js","https":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/https-browserify/index.js","url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js","error/typed":"node_modules/error/typed.js"}],"node_modules/small-request/lib/to-request-options.js":[function(require,module,exports) {
 'use strict';
 
 const _url = require('url');
@@ -9416,7 +9406,7 @@ const toRequestOptions = (requestModel) =>{
 };
 
 module.exports = toRequestOptions;
-},{"url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/small-request/lib/response-handler.js":[function(require,module,exports) {
+},{"url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/small-request/lib/response-handler.js":[function(require,module,exports) {
 'use strict';
 
 const responseHandler = (response, resolve, reject) => {
@@ -9689,7 +9679,7 @@ const filter = (request) => {
 module.exports = {
   filter: filter
 };
-},{"string-template":"node_modules/string-template/index.js","url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/query.js":[function(require,module,exports) {
+},{"string-template":"node_modules/string-template/index.js","url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/query.js":[function(require,module,exports) {
 'use strict';
 
 const _url = require('url');
@@ -9709,7 +9699,7 @@ const filter = (request) => {
 module.exports = {
   filter: filter
 };
-},{"url":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/urlencoded-body.js":[function(require,module,exports) {
+},{"url":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/url/url.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/urlencoded-body.js":[function(require,module,exports) {
 'use strict';
 
 const _caseless = require('caseless');
@@ -9732,7 +9722,7 @@ const filter = (request) => {
 module.exports = {
   filter: filter
 };
-},{"caseless":"node_modules/caseless/index.js","querystring":"../../../../usr/local/lib/node_modules/parcel-bundler/node_modules/querystring-es3/index.js","../headers":"node_modules/@tonybadguy/call-me-maybe/lib/headers.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/json-body.js":[function(require,module,exports) {
+},{"caseless":"node_modules/caseless/index.js","querystring":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/node_modules/querystring-es3/index.js","../headers":"node_modules/@tonybadguy/call-me-maybe/lib/headers.js"}],"node_modules/@tonybadguy/call-me-maybe/lib/request-filters/json-body.js":[function(require,module,exports) {
 'use strict';
 
 const _caseless = require('caseless');
@@ -10004,7 +9994,7 @@ module.exports = {
   client: createClient
 };
 
-},{"@tonybadguy/call-me-maybe":"node_modules/@tonybadguy/call-me-maybe/lib/index.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"@tonybadguy/call-me-maybe":"node_modules/@tonybadguy/call-me-maybe/lib/index.js"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -10032,7 +10022,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45373" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64130" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -10208,5 +10198,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","node_modules/yelp-fusion/lib/index.js"], null)
+},{}]},{},["C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","node_modules/yelp-fusion/lib/index.js"], null)
 //# sourceMappingURL=/lib.0128c671.js.map

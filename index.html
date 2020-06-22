@@ -1,88 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8' />
-    <title>Inclusion Map</title>
-<!--    <author>Akhila Errabelly</author>-->
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css' rel='stylesheet' />
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
-    <link rel="stylesheet" href="style.scss">
-    <link rel="stylesheet" href="loader.scss">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
-    <style>
-       
-#marker {
-            color: red;
-            display: block;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 0;
-           
-        }
-        .mapboxgl-marker {
-            cursor: pointer;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background-color: #3FB1CE;
-        }
-        .mapboxgl-popup {
-            max-width: 320px;
-            z-index: 1;
-        }
-        .mapboxgl-popup-content {
-            text-align: left;
-            font-family: 'Arial', sans-serif;
-        }
-    </style>
-    <script src="node_modules/yelp-fusion/lib/index.js"></script>
+  <meta charset="utf-8">
+  <title>Inclusion Map | City of Detroit</title>
+  <meta name="description" content="Application to Help Detroiters find free Wi-Fi locations.">
+  <meta name="author" content="Edgar Montes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
 </head>
 <body>
-<!--<div id="spinner"></div>-->
-<section id="initial-loader-overlay" class="active">
-    <article>
-        <div>
-            <div class="loader">
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__ball"></div>
-            </div>
-            <p>LOADING</p>
+  <section id="app-container">
+    <section id="user-type-section" class="active">
+      <article class="user-type-container">
+        <div class="">
+          <article class="user-type">
+            <h4>Welcome to the City of Detroit Census Map</h4>
+            <p>The map will help you understand the complexity of the census.</p>
+            <article class="user-type-btns">
+              <button type="button" name="button" data-btn-type="v-sign-up">START</button>
+            </article>
+          </article>
         </div>
-    </article>
-</section>
-<div id="mySidebar" class='sidebar'>
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <!-- <div class='heading'>
-          <h1>Our locations</h1>
-        </div> -->
-      <div id='listings' class='listings'></div>
-      </div>
-<div id="main">
-              <button class="openbtn" onclick="openNav()">☰</button> 
-    <div class='map_geo' id='map' ></div>
-    <div type="text" class="geocoder"required  id="geocoder" placeholder="Address"></div>
-    <div id="mylog"></div>
-</div>
-<script>
-function openNav() {
-    document.getElementById("mySidebar").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-  }
-  
-  function closeNav() {
-    document.getElementById("mySidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft= "0";
-  }</script>
-<script src='https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js'></script>
-<script type="text/javascript" src="index.js"></script>
+      </article>
+    </section>
+    <section id="initial-loader-overlay" class="">
+      <article>
+        <div>
+          <div class="loader">
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__ball"></div>
+          </div>
+          <p>LOADING</p>
+        </div>
+      </article>
+    </section>
+    <section id="alert-overlay" class="">
+      <article>
+        <span class="close">x</span>
+        <div></div>
+      </article>
+    </section>
+    <section id="drill-down-overlay" class="">
+      <article>
+        <span class="close">x</span>
+        <div></div>
+      </article>
+    </section>
+    <section class="application hidden">
+      <section class="data-panel">
+        <button class="close-btn" id="close-panel-btn"><i class="fas fa-angle-left"></i> Back</button>
+        <section class="content-section"></section>
+      </section>
+      <section class="map-panel">
+        <article id="map"></article>
+        <article id="geocoder"></article>
+        <section class="filters">
+          <button id="close-filters-btn" class="close-btn"><i class="fas fa-angle-left"></i> Back</button>
+          <h5>Filter Census Information</h5>
+          <article>
+            <button id="hardest-filter-btn" class="filter-btn">x</button>
+            <label for="hardest">By Hardest to Count:</label>
+            <select id="hardest" class="interactive-filters">
+              <option value="null" selected></option>
+              <option value="73-100">> 73 - 100</option>
+              <option value="70-73">> 70 - 73</option>
+              <option value="65-70">> 65 - 70</option>
+              <option value="60-65">> 60 - 65</option>
+              <option value="20-60">20 - 60</option>
+            </select>
+          </article>
+          <article>
+            <button id="low-response-filter-btn" class="filter-btn">x</button>
+            <label for="low-response">By Non-response Score:</label>
+            <select id="low-response" class="interactive-filters">
+              <option value="null" selected></option>
+              <option value="28+">Greater than 28%</option>
+              <option value="28-">Less than 28%</option>
+            </select>
+          </article>
+          <article>
+              <button id="population-filter-btn" class="filter-btn">x</button>
+              <label for="population">By Population:</label>
+              <select id="population" class="interactive-filters">
+                <option value="null" selected></option>
+                <option value="1500">Over 1,500</option>
+                <option value="2000">Over 2,000</option>
+              </select>
+            </article>
+          <article>
+            <button id="no-internet-filter-btn" class="filter-btn">x</button>
+            <label for="no-internet">By % of Homes without Internet:</label>
+            <select id="no-internet" class="interactive-filters">
+              <option value="null" selected></option>
+              <option value="86+">> 86</option>
+              <option value="60-86">>60 - 86</option>
+              <option value="40-60">>40 - 60</option>
+              <option value="20-40">>20 - 40</option>
+              <option value="0-20">0 - 20</option>
+            </select>
+          </article>
+        </section>
+        <button id="filters"><i class="fas fa-filter"></i> Filters</button>
+        <section id="legend">
+          <p><strong>Response Rate %</strong></p>
+          <article class="legend-colors">
+            <div class="legend-item rate-low"></div>
+            <div class="legend-item rate-20"></div>
+            <div class="legend-item rate-30"></div>
+            <div class="legend-item rate-40"></div>
+            <div class="legend-item rate-50"></div>
+            <div class="legend-item rate-60"></div>
+          </article>
+          <article class="legend-labels">
+            <div class="legend-item">0-20</div>
+            <div class="legend-item">20s</div>
+            <div class="legend-item">30s</div>
+            <div class="legend-item">40s</div>
+            <div class="legend-item">50s</div>
+            <div class="legend-item">60-100</div>
+          </article>
+        </section>
+      </section>
+    </section>
+  </section>
+  <script src="index.js"></script>
 </body>
 </html>

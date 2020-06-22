@@ -1,0 +1,51 @@
+// Colors
+$color-1: #004544;
+$color-2: #9fd5b3;
+$color-3: #E48F22;
+$color-4: #CF3234;
+$color-5: #444;
+$white: #fff;
+form{
+    padding: 1em;
+
+    fieldset{
+        ul{
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+            
+            li{
+                padding: .25em 1em;
+            }
+        }
+    }
+    
+    .logic-section {
+        display: none;
+    }
+    .logic-section.active{
+        display: block;
+    }
+
+    #submit-btn{
+        margin-right: 2em;
+    }
+    section, fieldset{
+        margin-bottom: 1em;
+    }
+    
+    section{
+        display: flex;
+
+        input{
+            width: 5em;
+            margin-left: .5em;
+        }
+    }
+
+    #cancel-btn{
+        background-color: $color-4;
+        color: $white;
+    }
+}
