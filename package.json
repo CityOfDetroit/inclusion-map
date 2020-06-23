@@ -6,7 +6,7 @@
   "scripts": {
     "start": "parcel index.html --https --no-cache -p 3000",
     "test": "./node_modules/.bin/cypress open",
-    "build": "parcel build src/index.js --no-cache --public-url '.' -d build"
+    "build": "parcel build index.js --no-cache --public-url '.' -d build"
   },
   "repository": {
     "type": "git",

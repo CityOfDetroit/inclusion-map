@@ -17,7 +17,6 @@ export default class Panel {
         let html = `
             <h5>WI-FI NEAR YOUR</h5>
              ${data.map((loc) => {
-                console.log(loc);
                 return `
                 <section class="location">
                 <input type="hidden" value="${loc.properties.ID}"></input>
@@ -28,15 +27,28 @@ export default class Panel {
                 <p>${loc.properties.address}</p>
                 <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
                 <p>
-                ${loc.properties.categories.map((cat) => {
-                    return `
-                    <span><em>${cat.title}</em></span> &bull;
-                    `       
-                }).join("")}
+                ${this.buildCategories(loc.properties.categories)}
                 </section>
                 `       
             }).join("")}
         `;
         return html;
+    }
+
+    buildCategories(categories){
+        if(Array.isArray(categories)){
+            return `${categories.map((cat) => {
+                return `
+                <span><em>${cat.title}</em></span> &bull;
+                `       
+            }).join("")}`;
+        }else{
+            let cleanCat = JSON.parse(categories);
+            return `${cleanCat.map((cat) => {
+                return `
+                <span><em>${cat.title}</em></span> &bull;
+                `       
+            }).join("")}`;
+        }
     }
 }

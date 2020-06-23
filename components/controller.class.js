@@ -111,6 +111,9 @@ export default class Controller {
         "type": "FeatureCollection",
         "features": []
       };
+      if(!Array.isArray(data) && data.error == "No WiFi locations found"){
+        data = [];
+      }
       data.forEach(function(loc, index){
         let tempWifi = {
           "type": "Feature",
@@ -145,6 +148,7 @@ export default class Controller {
   }
 
   geoResults(ev, _controller){
+    console.log(ev.result.geometry);
     _controller.map.geocoder.setInput('');
     _controller.map.map.getSource('single-point').setData(ev.result.geometry);
     _controller.getWiFiPoints(_controller, [ev.result.center[1],ev.result.center[0]]);
