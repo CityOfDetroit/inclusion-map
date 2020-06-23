@@ -30906,65 +30906,40 @@ exports.default = void 0;
 class Panel {
   constructor(container) {
     this.container = container;
+    this.active = false;
   }
 
-  buildPanel(data, type) {
-    this.container.innerHTML = type == 'list' ? this.buildList(data) : this.buildItem(data);
+  buildPanel(data) {
+    this.container.innerHTML = this.buildMarkup(data);
   }
 
   clearPanel() {
     this.container.innerHTML = '';
   }
 
-  buildItem(data) {
+  buildMarkup(data) {
     let html = `
-            <h5>Item</h5>
-        `;
-    return html;
-  }
-
-  buildList(data) {
-    let html = `
-            <h5>List</h5>
-            <section class="response-rates">
-            <div><span><strong>2010 RESPONSE RATE</strong><br>${resp2010}%</span></div>
-            <div><span><strong>2020 RESPONSE RATE</strong><br>${data2020 != undefined ? `${parseInt(data2020.properties.CRRALL)}%` : `No Data`}</span></div>
-            </section>
-            <section class="group">
-            <span class="header">Internet</span>
-            <p><strong>% of Internet Subscriptions:</strong> ${parseInt(data.properties.internet_p)}%</p>
-            <p><strong>% of No Internet Access:</strong> ${parseInt(data.properties.no_access_)}%</p>
-            <p><strong># of No Internet Access:</strong> ${parseInt(data.properties.no_interne)}</p>
-            </section>
-            <section class="group">
-            <span class="header">Population</span>
-            <p><strong>Househods:</strong> ${data.properties.households}</p>
-            <p><strong>Housing Units:</strong> ${data.properties.housing_un}</p>
-            <p><strong>Total Population:</strong> ${data.properties.total_pop_}</p>
-            <p><strong>Total Population under 5:</strong> ${data.properties.pop_under_}</p>
-            <p><strong>Low Response:</strong> ${parseInt(data.properties.low_respon)}%</p>
-            </section>
-            <section class="group">
-            <span class="header">Race and Hispanic Origin</span>
-            <p><strong># of Black or African American alone:</strong> ${data.properties.total_blac}</p>
-            <p><strong>% of Black or African American alone:</strong> ${parseInt(data.properties.black_alon)}%</p>
-            <p><strong>Hispanic Population 2010 census:</strong> ${data.properties.hispanic_c}</p>
-            <p><strong>Hispanic Population 2012-2017 ACS 5 year estimate:</strong> ${data.properties.hispanic_a}</p>
-            </section>
-            <section class="group">
-            <span class="header">Location</span>
-            <p><strong>Council District:</strong> ${data.properties.council_di}</p>
-            <p><strong>Hardest to Count(Mail Return Rate 2010):</strong> ${parseInt(data.properties.mrr)}%</p>
-            <p><strong>Neighborhood:</strong> ${data.properties.neighborho}</p>
-            <p><strong>Zip Codes:</strong> ${data.properties.zipcodes}</p>
-            </section>
-            <section class="group">
-            <span class="header">Learn more</span>
-            <article class="sub-group">
-                <a class="btn resource" href="/taxonomy/term/5441" target="_blank">Get Involved</a>
-            </article>
-            </section>
-            <p><small>Some small print and disclaimer.</small></p>
+            <h5>WI-FI NEAR YOUR</h5>
+             ${data.map(loc => {
+      console.log(loc);
+      return `
+                <section class="location">
+                <input type="hidden" value="${loc.properties.ID}"></input>
+                <div class="loc-img-container">
+                <img src="${loc.properties.image}" rel="${loc.properties.name}"></img>
+                </div>
+                <p><strong>${loc.properties.name}</strong></p>
+                <p>${loc.properties.address}</p>
+                <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
+                <p>
+                ${loc.properties.categories.map(cat => {
+        return `
+                    <span><em>${cat.title}</em></span> &bull;
+                    `;
+      }).join("")}
+                </section>
+                `;
+    }).join("")}
         `;
     return html;
   }
@@ -31104,7 +31079,7 @@ class Controller {
             ID: loc.id,
             image: loc.image_url,
             name: loc.name,
-            address: loc.location.display_address[0] + loc.location.display_address[1],
+            address: loc.location.display_address[0] + " " + loc.location.display_address[1],
             phone: loc.phone,
             displayPhone: loc.display_phone,
             categories: loc.categories
@@ -31120,8 +31095,8 @@ class Controller {
     });
   }
 
-  updatePanel(ev, _controller) {
-    this.panel.buildPanel(ev.data, ev.type);
+  updatePanel(data, _controller) {
+    this.panel.buildPanel(data);
   }
 
   geoResults(ev, _controller) {
@@ -31219,6 +31194,11 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
+},{"_css_loader":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
 },{"_css_loader":"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"sass/styles.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
@@ -31230,6 +31210,8 @@ module.hot.accept(reloadCSS);
 var _controller = _interopRequireDefault(require("./components/controller.class"));
 
 require("./node_modules/mapbox-gl/dist/mapbox-gl.css");
+
+require("./node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css");
 
 require("./sass/styles.scss");
 
@@ -31268,6 +31250,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
       controller.map.map.setFilter('wifi-featured', ['==', 'ID', '']);
       controller.panel.clearPanel();
     }
+  });
+  document.getElementById('close-panel-btn').addEventListener('click', function () {
+    controller.panel.clearPanel();
+    document.querySelector('.data-panel.active') != null ? document.querySelector('.data-panel.active').className = 'data-panel' : 0;
+  });
+  document.getElementById('panel-btn').addEventListener('click', function () {
+    controller.updatePanel(controller.wifiLocs);
+    document.querySelector('.data-panel').className = 'data-panel active';
   });
   const startingBtns = document.querySelectorAll('#user-type-section button');
   startingBtns.forEach(function (btn) {
@@ -31599,7 +31589,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //         console.log('device doesnt support location')
 //     }
 // }; /* END getUserLocation(); */
-},{"./components/controller.class":"components/controller.class.js","./node_modules/mapbox-gl/dist/mapbox-gl.css":"node_modules/mapbox-gl/dist/mapbox-gl.css","./sass/styles.scss":"sass/styles.scss"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./components/controller.class":"components/controller.class.js","./node_modules/mapbox-gl/dist/mapbox-gl.css":"node_modules/mapbox-gl/dist/mapbox-gl.css","./node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css":"node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css","./sass/styles.scss":"sass/styles.scss"}],"C:/Users/Edgar/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -31627,7 +31617,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53904" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65502" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

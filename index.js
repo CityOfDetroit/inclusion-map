@@ -1,5 +1,6 @@
 import Controller from './components/controller.class';
 import './node_modules/mapbox-gl/dist/mapbox-gl.css';
+import './node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './sass/styles.scss';
 (function start() {
   const controller = new Controller(document.querySelector('.content-section'));
@@ -30,6 +31,14 @@ import './sass/styles.scss';
       controller.map.map.setFilter('wifi-featured', ['==', 'ID', '']);
       controller.panel.clearPanel();
     }
+  });
+  document.getElementById('close-panel-btn').addEventListener('click', function () {
+    controller.panel.clearPanel();
+    (document.querySelector('.data-panel.active') != null) ?  document.querySelector('.data-panel.active').className = 'data-panel' : 0;
+  });
+  document.getElementById('panel-btn').addEventListener('click', function () {
+    controller.updatePanel(controller.wifiLocs);
+    document.querySelector('.data-panel').className = 'data-panel active';
   });
   const startingBtns = document.querySelectorAll('#user-type-section button');
   startingBtns.forEach(function (btn) {

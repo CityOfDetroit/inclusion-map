@@ -125,7 +125,7 @@ export default class Controller {
             ID: loc.id,
             image: loc.image_url,
             name: loc.name,
-            address: loc.location.display_address[0] + loc.location.display_address[1],
+            address: loc.location.display_address[0] + " " + loc.location.display_address[1],
             phone: loc.phone,
             displayPhone: loc.display_phone,
             categories: loc.categories
@@ -140,8 +140,8 @@ export default class Controller {
   }
 
 
-  updatePanel(ev, _controller){
-    this.panel.buildPanel(ev.data, ev.type);
+  updatePanel(data, _controller){
+    this.panel.buildPanel(data);
   }
 
   geoResults(ev, _controller){
