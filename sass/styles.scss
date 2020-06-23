@@ -1,0 +1,524 @@
+@import "calculator.scss";
+@import "radio.scss";
+@import "loader.scss";
+$base-duration: 300ms;
+$cubic: cubic-bezier(.64,.09,.08,1);
+// Colors
+$color-1: #004544;
+$color-2: #9fd5b3;
+$color-3: #E48F22;
+$color-4: #cb4d4f;
+$color-5: #444;
+$white: #fff;
+// $color-1: #004544;
+// $color-2: #23a696;
+// $color-3: #9fd5b3;
+// $color-4: #fff;
+// $color-5: #444;
+// $color-6: #FF625B;
+
+// Breakpoints
+$sm: new-breakpoint(min-width 320px);
+$med: new-breakpoint(min-width 768px);
+$lg: new-breakpoint(min-width 1024px);
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: $color-1;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: $color-1;
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: $color-1;
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: $color-1;
+}
+
+*, *:before, *:after {
+	box-sizing: border-box;
+	outline: none;
+}
+// ====================== mobile ============================
+#app-container{
+	height: calc(100vh - 5em);
+	position: relative;
+	overflow: hidden;
+}
+#alert-overlay, #drill-down-overlay, #initial-loader-overlay{
+	display: none;
+
+	article{
+		padding: 0;
+		transition: all .2s ease-in-out;
+	}
+}
+#user-type-section.hidden{
+  transition: all 5s ease-in-out;
+  top: 200vh;
+
+  .user-type-container{
+    display: none;
+  }
+}
+#user-type-section.active{
+	position: absolute;
+	z-index: 5;
+  bottom: 0;
+  display: flex;
+  width: 100vw;
+  transition: all 5s ease-in-out;
+
+  .user-type-container{
+    background-color: $color-3;
+    margin: auto;
+    box-shadow: -2px 2px 10px 1px rgba($color-1, 0.5);
+    display: flex;
+		width: 35em;
+		max-width: 100%;
+    min-height: 75vh;
+    padding: 1em;
+    overflow: hidden;;
+
+    div{
+      margin: auto;
+      display: flex;
+
+      article{
+				text-align: center;
+        width: 100%;
+        position: relative;
+        padding: 1em;
+        transition: all $base-duration $cubic;
+
+        h2{
+          text-align: center;
+          text-transform: uppercase;
+        }
+      }
+
+      article.move-left{
+        left: -33em;
+        transition: all $base-duration $cubic;
+      }
+    }
+
+    .login-form{
+      input{
+        border: none;
+        padding: 1em;
+        display: block;
+        width: 100%;
+        margin-bottom: 1em;
+      }
+      button{
+        width: 100%;
+      }
+    }
+
+    .user-type-btns{
+      display: flex;
+      justify-content: center;
+
+      span{
+        padding: 1.5em;
+      }
+    }
+  }
+}
+#initial-loader-overlay.active{
+  position: absolute;
+	z-index: 5;
+	height: 100vh;
+	width: 100vw;
+	padding: 1em;
+	background-color: rgba($white, .7);
+	display: flex;
+
+	article{
+		margin: auto;
+		position: relative;
+		max-width: 100%;
+		padding: 4em 2em;
+		transition: all .2s ease-in-out;
+
+		div{
+			padding: .5em;
+
+      p{
+        font-size: 1.28em;
+      }
+		}
+	}
+}
+#alert-overlay.active{
+	position: absolute;
+	z-index: 5;
+	height: 100vh;
+	width: 100vw;
+	padding: 1em;
+	background-color: rgba($white, .5);
+	display: flex;
+
+	article{
+		margin: auto;
+		position: relative;
+		width: 30em;
+		max-width: 100%;
+		background-color: $color-5;
+		padding: 4em 2em;
+		transition: all .2s ease-in-out;
+
+		div{
+			padding: .5em;
+			background-color: $color-6;
+			color: $white;
+		}
+
+		.close{
+			position: absolute;
+			top: .5em;
+			right: .5em;
+			font-weight: bold;
+			color: $white;
+			border: 2px solid $white;
+			padding: .25em .5em;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+	}
+}
+ul {
+  list-style: none;
+}
+
+.cf {
+	padding: 0;
+  &:before, &:after { content: ' '; display: table; }
+  &:after { clear: both; }
+}
+// ====================== mobile end ========================
+@media all and (min-width: 401px) {
+
+	button{
+		border: none;
+		background-color: $color-2;
+		padding: .25em 1em;
+		font-weight: bold;
+		color: $color-1;
+		cursor: pointer;
+		transition: all .2s ease-in-out;
+	}
+}
+@media all and (min-width: 700px) {
+	#filters{
+		font-size: 1.5em;
+	}
+}
+// ======================= header end =====================
+// ======================== main ==========================
+section.application {
+	background-color: $color-1;
+	position: relative;
+	display: flex;
+	align-items: stretch;
+	width: 100vw;
+	height: 100%;
+	transform: translateX(0px);
+	transition: all $base-duration ease;
+	z-index: 0;
+
+	.data-panel.active{
+		display: block;
+    	max-width: 100%;
+		width: 35em;
+		padding: .5em;
+		transition: all .2s ease-in-out;
+		margin-right: .25em;
+		overflow-y: auto;
+
+		h5{
+			border-bottom: solid #E48F22;
+			padding-right: 4em;
+    		margin: 1em 0;
+		}
+
+		.location{
+			background-color: $color-2;
+			padding: .5em;
+			margin-bottom: .25em;
+			cursor: pointer;
+
+			.loc-img-container{
+				width: 100%;
+				height: 12em;
+				overflow: hidden;
+	
+				img{
+					width: 100%;
+				}
+			}
+
+			p{
+				margin: 0;
+			}
+		}
+
+		.location:hover{
+			background-color: $color-1;
+			color: $white;
+		}
+	}
+
+  .data-panel{
+		background-color: #eaeaea;
+		z-index: 5;
+		position: relative;
+    width: 0;
+		padding: 0;
+		transition: all .2s ease-in-out;
+	}
+
+	.close-btn{
+		position: absolute;
+		top: 1em;
+		right: 1em;
+		width: auto;
+		font-size: 1.25em;
+		padding: .25em .5em;
+	}
+  .loading-box{
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+  }
+  .dot-1,.dot-2,.dot-3{opacity: 0}
+  .dot-1{animation: dot-animation-1 2s infinite ease forwards;}
+  .dot-2{animation: dot-animation-2 2s infinite ease forwards;}
+  .dot-3{animation: dot-animation-3 2s infinite ease forwards;}
+  @-webkit-keyframes dot-animation-1 {
+    0% { opacity: 1}
+    33% { opacity: 0}
+    100% { opacity: 0}
+  }
+  @-webkit-keyframes dot-animation-2 {
+    0% { opacity: 0}
+    33% { opacity: 1}
+    66% { opacity: 0}
+  }
+  @-webkit-keyframes dot-animation-3 {
+    0% { opacity: 0}
+    66% { opacity: 1}
+    100% { opacity: 0}
+  }
+	.map-panel{
+		display: block;
+		position: relative;
+		overflow: hidden;
+		flex: 1;
+
+		#population-description{
+			margin-top: -.25em;
+			font-size: 85%;
+		}
+		#add-income-description{
+			margin-top: -1em;
+			font-size: 85%;
+		}
+
+		.filter-btn{
+			width: auto;
+			padding: .7em 1.1em;
+			border-radius: 50%;
+			background: $color-4;
+			color: $white;
+			cursor: pointer;
+			visibility: hidden;
+		}
+
+		.filter-btn.active{
+			visibility: visible;
+		}
+
+		.calculator, .filters{
+			display: block;
+			position: absolute;
+			z-index: 5;
+			overflow-y: auto;
+			top: 0;
+			left: -26em;
+			width: 25em;
+			max-width: 100vw;
+			height: 100%;
+			padding: 1em;
+			background-color: #eaeaea;
+			box-shadow: -2px 2px 10px 1px rgba(0, 69, 68, 0.5);
+			transition: all .2s ease-in-out;
+		}
+
+		.filters.active{
+			left: 0;
+			transition: all .2s ease-in-out;
+
+			h5{
+				border-bottom: solid $color-3;
+				color: $color-1;
+				margin-top: 1em;
+			}
+
+			#population-description{
+				padding-left: 3.5em;
+			}
+
+			input, select{
+				width: 30%;
+			}
+
+			label{
+				width: calc(68% - 50px);
+			}
+
+			article{
+				margin-bottom: 1em;
+			}
+
+			#calculator-btn, #filter-reset-btn{
+				width: 8em;
+			}
+
+			#calculator-btn.off{
+				background-color: transparent;
+				border: solid;
+			}
+
+			#calculator-btn.on{
+				background-color: $color-2;
+				border: none;
+			}
+
+			#filter-reset-btn{
+				background-color: $color-4;
+				color: $white;
+			}
+
+			.legend.active{
+				display: block;
+				padding: .5em 1em;
+				border: solid .25em $color-1;
+
+				p:first-child{
+					span{
+						background: $color-1;
+						color: $color-1;
+						padding: .05em .45em;
+						border-radius: 50%;
+						margin-right: .5em;
+					}
+				}
+				p:nth-child(2){
+					span{
+						background: $color-3;
+						color: $color-3;
+						padding: .05em .45em;
+						border-radius: 50%;
+						margin-right: .5em;
+					}
+				}
+			}
+			.legend{
+				display: none;
+			}
+		}
+
+		.calculator.active{
+			left: 0;
+			transition: all .2s ease-in-out;
+
+			h5{
+				border-bottom: solid #E48F22;
+				margin: 0;
+			}
+		}
+
+		#geocoder{
+			position: absolute;
+			top: .6em;
+			right: 3em;
+		}
+
+		#map{
+			width: 100%;
+			height: 100%;
+			box-shadow: -2px 2px 10px 1px rgba($color-1, 0.5);
+		}
+
+		#panel-btn{
+			position: absolute;
+			top: 2.75em;
+			right: 3em;
+			font-size: 1.25em;
+			border: solid .1em $color-1;
+		}
+
+		#legend{
+			position: absolute;
+			padding: .25em;
+			bottom: .5em;
+			left: .5em;
+			z-index: 5;
+			width: 25em;
+			max-width: calc(100% - 1em);
+			background: $white;
+
+			p{
+				margin: 0;
+			}
+
+			.legend-colors, .legend-labels{
+				display: flex;
+
+				.legend-item{
+					flex:1;
+					text-align: center;
+				}
+			}
+
+			.legend-colors{
+				.legend-item{
+					height: 1em;
+				}
+
+				.rate-low{
+					background-color: $color-4;
+					opacity: .6;
+				}
+
+				.rate-20{
+					background-color: $color-3;
+					opacity: .6;
+				}
+
+				.rate-30{
+					background-color: $color-2;
+					opacity: .6;
+				}
+
+				.rate-40{
+					background-color: $color-2;
+					opacity: 1;
+				}
+
+				.rate-50{
+					background-color: $color-1;
+					opacity: .6;
+				}
+
+				.rate-60{
+					background-color: $color-1;
+					opacity: .8;
+				}
+			}
+		}
+	}
+}
+// ===================== main end =========================

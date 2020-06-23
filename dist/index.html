@@ -1,84 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Inclusion Map</title>
-<!--    <author>Akhila Errabelly</author>-->
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css" type="text/css">
-    <link rel="stylesheet" href="/style.97fcb138.css">
-    <link rel="stylesheet" href="/loader.cf80a905.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css" type="text/css">
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js"></script>
-    <style>#marker {
-            color: red;
-            display: block;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 0;
-           
-        }
-        .mapboxgl-marker {
-            cursor: pointer;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background-color: #3FB1CE;
-        }
-        .mapboxgl-popup {
-            max-width: 320px;
-            z-index: 1;
-        }
-        .mapboxgl-popup-content {
-            text-align: left;
-            font-family: 'Arial', sans-serif;
-        }</style>
-    <script src="/lib.0128c671.js"></script>
-<script src="/style.97fcb138.js"></script><script src="/loader.cf80a905.js"></script></head>
+  <meta charset="utf-8">
+  <title>Wi-Fi Map | City of Detroit</title>
+  <meta name="description" content="Application to Help Detroiters find free Wi-Fi locations.">
+  <meta name="author" content="Edgar Montes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <link href="/all.bd53a3a9.css" rel="stylesheet">
+<script src="/all.bd53a3a9.js"></script><link rel="stylesheet" href="/inclusion-map.e31bb0bc.css"></head>
 <body>
-<!--<div id="spinner"></div>-->
-<section id="initial-loader-overlay" class="active">
-    <article>
-        <div>
-            <div class="loader">
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__bar"></div>
-                <div class="loader__ball"></div>
-            </div>
-            <p>LOADING</p>
+  <section id="app-container">
+    <section id="user-type-section" class="active">
+      <article class="user-type-container">
+        <div class="">
+          <article class="user-type">
+            <h4>Welcome to the City of Detroit Wi-Fi Map</h4>
+            <p>The map will help you find free Wi-Fi location across the city.</p>
+            <p>You can find Wi-Fi location near you by:</p>
+            <ul>
+                <li>Clicking on a location in the map.</li>
+                <li>Entering an address on the top right corner.</li>
+            </ul>
+            <article class="user-type-btns">
+              <button type="button" name="button" data-btn-type="v-sign-up">START</button>
+            </article>
+          </article>
         </div>
-    </article>
-</section>
-<div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <!-- <div class='heading'>
-          <h1>Our locations</h1>
-        </div> -->
-      <div id="listings" class="listings"></div>
-      </div>
-<div id="main">
-              <button class="openbtn" onclick="openNav()">☰</button> 
-    <div class="map_geo" id="map"></div>
-    <div type="text" class="geocoder" required="" id="geocoder" placeholder="Address"></div>
-    <div id="mylog"></div>
-</div>
-<script>function openNav() {
-  document.getElementById("mySidebar").style.width = "250px";
-  document.getElementById("main").style.marginLeft = "250px";
-}
-
-function closeNav() {
-  document.getElementById("mySidebar").style.width = "0";
-  document.getElementById("main").style.marginLeft = "0";
-}</script>
-<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
-<script type="text/javascript" src="/inclusion-map.e31bb0bc.js"></script>
+      </article>
+    </section>
+    <section id="initial-loader-overlay" class="">
+      <article>
+        <div>
+          <div class="loader">
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__bar"></div>
+            <div class="loader__ball"></div>
+          </div>
+          <p>LOADING</p>
+        </div>
+      </article>
+    </section>
+    <section id="alert-overlay" class="">
+      <article>
+        <span class="close">x</span>
+        <div></div>
+      </article>
+    </section>
+    <section id="drill-down-overlay" class="">
+      <article>
+        <span class="close">x</span>
+        <div></div>
+      </article>
+    </section>
+    <section class="application hidden">
+      <section class="data-panel">
+        <button class="close-btn" id="close-panel-btn"><i class="fas fa-angle-left"></i> Back</button>
+        <section class="content-section"></section>
+      </section>
+      <section class="map-panel">
+        <article id="map"></article>
+        <article id="geocoder"></article>
+        <button id="panel-btn"><i class="fas fa-list-ul"></i> List</button>
+      </section>
+    </section>
+  </section>
+  <script src="/inclusion-map.e31bb0bc.js"></script>
 </body>
 </html>
