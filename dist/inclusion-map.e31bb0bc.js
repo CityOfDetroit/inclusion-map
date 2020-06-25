@@ -30909,8 +30909,49 @@ class Panel {
     this.active = false;
   }
 
-  buildPanel(data) {
+  buildPanel(data, _controller) {
     this.container.innerHTML = this.buildMarkup(data);
+    let locs = document.querySelectorAll('.location');
+    locs.forEach(loc => {
+      loc.addEventListener('click', ev => {
+        switch (ev.target.tagName) {
+          case 'STRONG':
+            _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.parentNode.childNodes[1].value]);
+
+            _controller.panel.clearPanel();
+
+            document.querySelector('.data-panel.active').className = 'data-panel';
+            break;
+
+          case 'IMG':
+            _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.parentNode.childNodes[1].value]);
+
+            _controller.panel.clearPanel();
+
+            document.querySelector('.data-panel.active').className = 'data-panel';
+            break;
+
+          case 'P':
+            _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.childNodes[1].value]);
+
+            _controller.panel.clearPanel();
+
+            document.querySelector('.data-panel.active').className = 'data-panel';
+            break;
+
+          case 'DIV':
+            _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.childNodes[1].value]);
+
+            _controller.panel.clearPanel();
+
+            document.querySelector('.data-panel.active').className = 'data-panel';
+            break;
+
+          default:
+            break;
+        }
+      });
+    });
   }
 
   clearPanel() {
@@ -30923,15 +30964,14 @@ class Panel {
              ${data.map(loc => {
       return `
                 <section class="location">
-                <input type="hidden" value="${loc.properties.ID}"></input>
-                <div class="loc-img-container">
-                <img src="${loc.properties.image}" rel="${loc.properties.name}"></img>
-                </div>
-                <p><strong>${loc.properties.name}</strong></p>
-                <p>${loc.properties.address}</p>
-                <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
-                <p>
-                ${this.buildCategories(loc.properties.categories)}
+                    <input type="hidden" value="${loc.properties.ID}"></input>
+                    <div class="loc-img-container">
+                    <img src="${loc.properties.image}" rel="${loc.properties.name}"></img>
+                    </div>
+                    <p><strong>${loc.properties.name}</strong></p>
+                    <p>${loc.properties.address}</p>
+                    <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
+                    <p>${this.buildCategories(loc.properties.categories)}</p>
                 </section>
                 `;
     }).join("")}
@@ -31046,8 +31086,8 @@ class Controller {
   }
 
   initialForm(ev, _controller) {
-    switch (ev) {
-      case 'v-sign-up':
+    switch (ev.target.getAttribute('data-btn-type')) {
+      case 'start':
         document.querySelector('#user-type-section').className = 'hidden';
         document.querySelector('section.application').className = 'application';
 
@@ -31075,7 +31115,6 @@ class Controller {
 
     }).then(resp => resp.json()) // Transform the data into json
     .then(data => {
-      console.log("data", data);
       let tempWiFiList = {
         "type": "FeatureCollection",
         "features": []
@@ -31113,7 +31152,7 @@ class Controller {
   }
 
   updatePanel(data, _controller) {
-    this.panel.buildPanel(data);
+    this.panel.buildPanel(data, _controller);
   }
 
   geoResults(ev, _controller) {
@@ -31291,13 +31330,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     document.querySelector('.data-panel.active') != null ? document.querySelector('.data-panel.active').className = 'data-panel' : 0;
   });
   document.getElementById('panel-btn').addEventListener('click', function () {
-    controller.updatePanel(controller.wifiLocs);
+    controller.updatePanel(controller.wifiLocs, controller);
     document.querySelector('.data-panel').className = 'data-panel active';
   });
   const startingBtns = document.querySelectorAll('#user-type-section button');
   startingBtns.forEach(function (btn) {
     btn.addEventListener('click', function (ev) {
-      controller.initialForm(ev.target.attributes[2].nodeValue, controller);
+      controller.initialForm(ev, controller);
     });
   });
   controller.map.geocoder.on('result', function (ev, parent = this) {
@@ -31344,7 +31383,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58578" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49354" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

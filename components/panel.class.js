@@ -5,8 +5,41 @@ export default class Panel {
         this.active    = false;
     }
 
-    buildPanel(data){
+    buildPanel(data, _controller){
         this.container.innerHTML = this.buildMarkup(data);
+        let locs = document.querySelectorAll('.location');
+        locs.forEach((loc)=>{
+            loc.addEventListener('click',(ev)=>{
+                switch (ev.target.tagName) {
+                    case 'STRONG':
+                        _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.parentNode.childNodes[1].value]);
+                        _controller.panel.clearPanel();
+                        document.querySelector('.data-panel.active').className = 'data-panel';
+                        break;
+
+                    case 'IMG':
+                        _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.parentNode.childNodes[1].value]);
+                        _controller.panel.clearPanel();
+                        document.querySelector('.data-panel.active').className = 'data-panel';
+                        break;
+
+                    case 'P':
+                        _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.childNodes[1].value]);
+                        _controller.panel.clearPanel();
+                        document.querySelector('.data-panel.active').className = 'data-panel';
+                        break;
+
+                    case 'DIV':
+                        _controller.map.map.setFilter('wifi-featured', ['==', 'ID', ev.target.parentNode.childNodes[1].value]);
+                        _controller.panel.clearPanel();
+                        document.querySelector('.data-panel.active').className = 'data-panel';
+                        break;
+                
+                    default:
+                        break;
+                }
+            })
+        })
     }
 
     clearPanel(){
@@ -19,15 +52,14 @@ export default class Panel {
              ${data.map((loc) => {
                 return `
                 <section class="location">
-                <input type="hidden" value="${loc.properties.ID}"></input>
-                <div class="loc-img-container">
-                <img src="${loc.properties.image}" rel="${loc.properties.name}"></img>
-                </div>
-                <p><strong>${loc.properties.name}</strong></p>
-                <p>${loc.properties.address}</p>
-                <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
-                <p>
-                ${this.buildCategories(loc.properties.categories)}
+                    <input type="hidden" value="${loc.properties.ID}"></input>
+                    <div class="loc-img-container">
+                    <img src="${loc.properties.image}" rel="${loc.properties.name}"></img>
+                    </div>
+                    <p><strong>${loc.properties.name}</strong></p>
+                    <p>${loc.properties.address}</p>
+                    <p><a href="tel:${loc.properties.phone}">${loc.properties.displayPhone}</a></p>
+                    <p>${this.buildCategories(loc.properties.categories)}</p>
                 </section>
                 `       
             }).join("")}

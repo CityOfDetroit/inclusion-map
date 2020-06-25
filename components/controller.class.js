@@ -82,8 +82,8 @@ export default class Controller {
   }
   
   initialForm(ev,_controller){
-    switch (ev) {
-      case 'v-sign-up':
+    switch (ev.target.getAttribute('data-btn-type')) {
+      case 'start':
         document.querySelector('#user-type-section').className = 'hidden';
         document.querySelector('section.application').className = 'application';
         _controller.map.map.resize();
@@ -106,7 +106,6 @@ export default class Controller {
     }).then(resp => resp.json())
     // Transform the data into json
     .then((data) => {
-      console.log("data", data);
       let tempWiFiList = {
         "type": "FeatureCollection",
         "features": []
@@ -144,7 +143,7 @@ export default class Controller {
 
 
   updatePanel(data, _controller){
-    this.panel.buildPanel(data);
+    this.panel.buildPanel(data, _controller);
   }
 
   geoResults(ev, _controller){

@@ -51,13 +51,13 @@ import './sass/styles.scss';
     (document.querySelector('.data-panel.active') != null) ?  document.querySelector('.data-panel.active').className = 'data-panel' : 0;
   });
   document.getElementById('panel-btn').addEventListener('click', function () {
-    controller.updatePanel(controller.wifiLocs);
+    controller.updatePanel(controller.wifiLocs, controller);
     document.querySelector('.data-panel').className = 'data-panel active';
   });
   const startingBtns = document.querySelectorAll('#user-type-section button');
   startingBtns.forEach(function (btn) {
     btn.addEventListener('click', function (ev) {
-      controller.initialForm(ev.target.attributes[2].nodeValue, controller);
+      controller.initialForm(ev, controller);
     });
   });
 
